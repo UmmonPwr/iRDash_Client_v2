@@ -4,13 +4,13 @@
 #include "XPT2046_Touchscreen.h"
 
 // pin definitions for the display controller
-#define TFT_DC 27
+#define TFT_DC 32
 #define TFT_CS 22
-#define TFT_MOSI 14
-#define TFT_CLK 12
+#define TFT_MOSI 33
+#define TFT_CLK 25
 #define TFT_RST 21
 #define TFT_MISO 15
-#define TFT_LED 13
+#define TFT_LED 26
 #define TOUCH_CS 5
 #define TOUCH_IRQ 4
 
