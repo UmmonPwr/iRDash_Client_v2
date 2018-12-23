@@ -22,13 +22,14 @@
 #define TOUCH_Y_MAX 3895
 
 // define car identification numbers
-#define NUMOFCARS 5     // number of car profiles, maximum is 16
-#define DEFAULTCAR 4    // car profile to show at startup
+#define NUMOFCARS 6     // number of car profiles, maximum is 16
+#define DEFAULTCAR 5    // car profile to show at startup
 #define ID_Skippy 0
 #define ID_CTS_V  1
 #define ID_MX5_NC 2
 #define ID_MX5_ND 3
 #define ID_FR20   4
+#define ID_DF3    5
 
 // define the drawing colors, rgb components in 8 bit range in comment
 // color value in 16 bit; 5 bit red, 6 bit green, 5 bit blue format
@@ -327,7 +328,7 @@ void UploadProfiles()
   CarProfile[ID_FR20].Fuel = 30;
   CarProfile[ID_FR20].RPM = 307;           // 7300 / RPMscale
   CarProfile[ID_FR20].RPMscale = 23.75;    // 7600 / 320
-  CarProfile[ID_FR20].WaterTemp = 100;
+  CarProfile[ID_FR20].WaterTemp = 90;
 
   CarProfile[ID_FR20].SLI[0] = 6600;
   CarProfile[ID_FR20].SLI[1] = 6700;
@@ -337,6 +338,29 @@ void UploadProfiles()
   CarProfile[ID_FR20].SLI[5] = 7100;
   CarProfile[ID_FR20].SLI[6] = 7200;
   CarProfile[ID_FR20].SLI[7] = 7300;
+
+  // Dallara Formula 3
+  CarProfile[ID_DF3].CarName[0] = 'D';
+  CarProfile[ID_DF3].CarName[1] = 'a';
+  CarProfile[ID_DF3].CarName[2] = 'l';
+  CarProfile[ID_DF3].CarName[3] = 'l';
+  CarProfile[ID_DF3].CarName[4] = 'F';
+  CarProfile[ID_DF3].CarName[5] = '3';
+  CarProfile[ID_DF3].CarName[6] = 0;
+
+  CarProfile[ID_DF3].Fuel = 30;
+  CarProfile[ID_DF3].RPM = 305;           // 7050 / RPMscale
+  CarProfile[ID_DF3].RPMscale = 23.125;   // 7400 / 320
+  CarProfile[ID_DF3].WaterTemp = 110;
+
+  CarProfile[ID_DF3].SLI[0] = 6450;
+  CarProfile[ID_DF3].SLI[1] = 6550;
+  CarProfile[ID_DF3].SLI[2] = 6650;
+  CarProfile[ID_DF3].SLI[3] = 6750;
+  CarProfile[ID_DF3].SLI[4] = 6850;
+  CarProfile[ID_DF3].SLI[5] = 6950;
+  CarProfile[ID_DF3].SLI[6] = 7050;
+  CarProfile[ID_DF3].SLI[7] = 7150;
 
   // use the formula to determine button outline: (x*80)+10, (y*54)+30, 60, 36)
   // x and y is the position in the 4x4 matrix
@@ -497,6 +521,25 @@ void DrawBackground(byte ID)
         tft.println("70");
         tft.drawLine(CarProfile[ID_FR20].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
+
+      case ID_DF3:
+        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_FR20].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft.drawLine(86, ScreenLayout.RPMPosY+28, 86, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft.drawLine(173, ScreenLayout.RPMPosY+28, 173, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft.drawLine(259, ScreenLayout.RPMPosY+28, 259, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft.setTextColor(bc, 0);
+        tft.setTextSize(1);
+        tft.setCursor(38, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft.println("10");
+        tft.setCursor(125, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft.println("30");
+        tft.setCursor(211, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft.println("50");
+        tft.setCursor(298, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft.println("70");
+        tft.drawLine(CarProfile[ID_FR20].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        break;
     }
   }
 
@@ -638,7 +681,7 @@ void DrawWaterTemp(byte ID, int WaterTemp, int WaterTempPrev)
          tft.print(WaterTemp, DEC);
          if (WaterTempPrev >= 100)  // previous value was greater than 99, so we have to clear the above 100 value from the screen
          {
-           tft.fillRect(ScreenLayout.WaterTempPosX+100, ScreenLayout.WaterTempPosY, 16, 16, 0);
+           tft.fillRect(ScreenLayout.WaterTempPosX+100, ScreenLayout.WaterTempPosY, 12, 16, 0);
          }                    
        }
        else if (WaterTemp<1000 && WaterTemp>0) 
@@ -827,13 +870,13 @@ void setup()
   
   // setup the LCD and switch on the backlight
   tft.begin();
-  tft.setRotation(3); // set to landscape mode
+  tft.setRotation(1); // set to landscape mode
   pinMode(TFT_LED, OUTPUT);
   digitalWrite(TFT_LED, HIGH);  // switch on the backlight
 
   // setup the touch sensing
   ts.begin();
-  ts.setRotation(1);  // not necessary same as the screen rotation
+  ts.setRotation(3);  // not necessary same as the screen rotation
   
   // start serial port at speed of 115200 bps
   Serial.begin(115200, SERIAL_8N1);
@@ -972,5 +1015,3 @@ void loop()
     }
   }
 }
-
-

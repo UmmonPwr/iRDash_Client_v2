@@ -17,6 +17,7 @@ Currently it has profile for:
 - Cadillac CTS-V
 - MX-5 (NC and ND)
 - Formula Renault 2.0
+- Dallara Formula 3
 
 The program is developed on a Geekcreit ESP32 dev board and a 320x240 resolution touch sensitive SPI serial TFT display.
 Difference to the previous version is the move to Adafruit GFX library from the UTFT libraries. UTFT does not work on ESP32.
