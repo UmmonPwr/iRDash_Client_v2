@@ -303,18 +303,18 @@ void UploadProfiles()
   CarProfile[ID_MX5_ND].CarName[6] = 0;
 
   CarProfile[ID_MX5_ND].Fuel = 40;
-  CarProfile[ID_MX5_ND].RPM = 281;           // 6400 / RPMscale
-  CarProfile[ID_MX5_ND].RPMscale = 22.8125;  // 7300 / 320
+  CarProfile[ID_MX5_ND].RPM = 294;           // 6900 / RPMscale
+  CarProfile[ID_MX5_ND].RPMscale = 23.4375;  // 7500 / 320
   CarProfile[ID_MX5_ND].WaterTemp = 100;
 
-  CarProfile[ID_MX5_ND].SLI[0] = 5000;
-  CarProfile[ID_MX5_ND].SLI[1] = 5200;
-  CarProfile[ID_MX5_ND].SLI[2] = 5400;
-  CarProfile[ID_MX5_ND].SLI[3] = 5600;
-  CarProfile[ID_MX5_ND].SLI[4] = 5800;
-  CarProfile[ID_MX5_ND].SLI[5] = 6200;
-  CarProfile[ID_MX5_ND].SLI[6] = 6400;
-  CarProfile[ID_MX5_ND].SLI[7] = 6600;
+  CarProfile[ID_MX5_ND].SLI[0] = 5500;
+  CarProfile[ID_MX5_ND].SLI[1] = 5700;
+  CarProfile[ID_MX5_ND].SLI[2] = 5900;
+  CarProfile[ID_MX5_ND].SLI[3] = 6100;
+  CarProfile[ID_MX5_ND].SLI[4] = 6300;
+  CarProfile[ID_MX5_ND].SLI[5] = 6500;
+  CarProfile[ID_MX5_ND].SLI[6] = 6900;
+  CarProfile[ID_MX5_ND].SLI[7] = 7200;
 
   // Formula Renault 2.0
   CarProfile[ID_FR20].CarName[0] = 'F';
@@ -486,18 +486,18 @@ void DrawBackground(byte ID)
       case ID_MX5_ND:
         tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_MX5_ND].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
         tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
-        tft.drawLine(88, ScreenLayout.RPMPosY+28, 88, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
-        tft.drawLine(175, ScreenLayout.RPMPosY+28, 175, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
-        tft.drawLine(263, ScreenLayout.RPMPosY+28, 263, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft.drawLine(85, ScreenLayout.RPMPosY+28, 85, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft.drawLine(171, ScreenLayout.RPMPosY+28, 171, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft.drawLine(256, ScreenLayout.RPMPosY+28, 256, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
         tft.setTextColor(bc, 0);
         tft.setTextSize(1);
-        tft.setCursor(39, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft.setCursor(38, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
         tft.println("10");
-        tft.setCursor(127, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft.setCursor(123, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
         tft.println("30");
-        tft.setCursor(214, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft.setCursor(208, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
         tft.println("50");
-        tft.setCursor(302, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft.setCursor(294, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
         tft.setTextColor(wc, 0);
         tft.println("70");
         tft.drawLine(CarProfile[ID_MX5_ND].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
@@ -876,7 +876,7 @@ void setup()
 
   // setup the touch sensing
   ts.begin();
-  ts.setRotation(3);  // not necessary same as the screen rotation
+  ts.setRotation(3);  // not necessarily same as the screen rotation
   
   // start serial port at speed of 115200 bps
   Serial.begin(115200, SERIAL_8N1);
