@@ -2,16 +2,17 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9341.h"
 #include "XPT2046_Touchscreen.h"
+//#include "ILI9341_t3.h"  // PaulStoffregen's Optimized ILI9341 TFT Library - WIP
 
 // pin definitions for the display controller
-#define TFT_DC 32
-#define TFT_CS 22
+#define TFT_DC   32
+#define TFT_CS   22
 #define TFT_MOSI 33
-#define TFT_CLK 25
-#define TFT_RST 21
+#define TFT_CLK  25
+#define TFT_RST  21
 #define TFT_MISO 15
-#define TFT_LED 26
-#define TOUCH_CS 5
+#define TFT_LED  26
+#define TOUCH_CS  5
 #define TOUCH_IRQ 4
 
 // calibration values for the touch position
@@ -22,14 +23,16 @@
 #define TOUCH_Y_MAX 3895
 
 // define car identification numbers
-#define NUMOFCARS 6     // number of car profiles, maximum is 16
-#define DEFAULTCAR 5    // car profile to show at startup
-#define ID_Skippy 0
-#define ID_CTS_V  1
-#define ID_MX5_NC 2
-#define ID_MX5_ND 3
-#define ID_FR20   4
-#define ID_DF3    5
+#define NUMOFCARS  7    // number of car profiles, maximum is 16
+#define NUMOFGEARS 10   // maximum number of gears including reverse and neutral
+#define DEFAULTCAR 6    // car profile to show at startup
+#define ID_Skippy  0
+#define ID_CTS_V   1
+#define ID_MX5_NC  2
+#define ID_MX5_ND  3
+#define ID_FR20    4
+#define ID_DF3     5
+#define ID_992_CUP 6
 
 // define the drawing colors, rgb components in 8 bit range in comment
 // color value in 16 bit; 5 bit red, 6 bit green, 5 bit blue format
@@ -37,11 +40,11 @@
 #define mc 65408       // middle color;      red: 255 (11111), green: 240 (111100), blue: 0   (00000)
 #define wc 64300       // warning color;     red: 255 (11111), green: 100 (011001), blue: 100 (01100)
 #define bc 17832       // background color;  red: 70  (01000), green: 180 (101101), blue: 70  (01000)
-#define icon_ok 32768  //                    red: 135 (10000), green: 0   (000000), blue: 0   (00000)
+#define icon_ok  32768 //                    red: 135 (10000), green: 0   (000000), blue: 0   (00000)
 #define icon_nok 63488 //                    red: 255 (11111), green: 0   (000000), blue: 0   (00000)
 
 // define the icon bitmaps
-const unsigned char fuelpressure [] PROGMEM = {
+const unsigned char fuelpressure [128] = {
   // 'fuelpressure'
   0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xcc, 0x00, 0x00, 0xff, 0xce, 0x00, 0x00, 0xc0, 0x67, 0x00, 
   0x00, 0xc0, 0x63, 0x00, 0x00, 0xc0, 0x63, 0x80, 0x00, 0xc0, 0x63, 0x80, 0x00, 0xc0, 0x63, 0x00, 
@@ -53,7 +56,7 @@ const unsigned char fuelpressure [] PROGMEM = {
   0x18, 0x33, 0xcf, 0x78, 0x18, 0x21, 0xce, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 };
 
-const unsigned char oilpressure [] PROGMEM = {
+const unsigned char oilpressure [128] = {
   // 'oilpressure'
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
   0x00, 0x00, 0x00, 0x00, 0x3c, 0x7c, 0x00, 0x00, 0x7f, 0x3c, 0x00, 0x00, 0x73, 0x18, 0x00, 0x3c, 
@@ -65,7 +68,7 @@ const unsigned char oilpressure [] PROGMEM = {
   0x18, 0x33, 0xcf, 0x78, 0x18, 0x21, 0xce, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 };
 
-const unsigned char stall [] PROGMEM = {
+const unsigned char stall [128] = {
   // 'stall'
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x80, 0x00, 0x00, 0x03, 0x80, 0x00, 
@@ -77,7 +80,7 @@ const unsigned char stall [] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 };
 
-const unsigned char water [] PROGMEM = {
+const unsigned char water [128] = {
   // 'water'
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
   0x00, 0x01, 0x80, 0x00, 0x00, 0x01, 0xc0, 0x00, 0x00, 0x01, 0xc0, 0x00, 0x00, 0x01, 0xfe, 0x00, 
@@ -90,6 +93,7 @@ const unsigned char water [] PROGMEM = {
 };
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
+//ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC);  // PaulStoffregen's Optimized ILI9341 TFT Library - WIP
 XPT2046_Touchscreen ts(TOUCH_CS, TOUCH_IRQ);  // the default SPI pins will be used for the communication
 
 // bit fields of engine warnings for reference
@@ -107,7 +111,7 @@ XPT2046_Touchscreen ts(TOUCH_CS, TOUCH_IRQ);  // the default SPI pins will be us
 // variables are aligned for 16/32 bit systems to prevent padding
 struct SIncomingData
 {
-  byte EngineWarnings;
+  char EngineWarnings;
   char Gear;
   bool IsInGarage;
   bool IsOnTrack;
@@ -120,7 +124,7 @@ struct SIncomingData
 // structure to store the actual and the previous screen data
 struct SViewData
 {
-  byte EngineWarnings;
+  char EngineWarnings;
   int Fuel;
   char Gear;
   int RPMgauge;
@@ -161,7 +165,7 @@ struct SCarProfile
   int RPM;                    // value where the redline starts in pixels
   float RPMscale;             // actual RPM value is divided by this number to scale it to display coordinate
   int WaterTemp;              // value in Celsius
-  int SLI[8];                 // RPM values for each SLI light
+  int SLI[NUMOFGEARS][8];     // RPM values for each SLI light
 };
 
 // structure to store the button layout
@@ -175,12 +179,12 @@ struct SButton
   int TextY;
 };
 
-byte inByte;                  // incoming byte from the serial port
+char inByte;                  // incoming byte from the serial port
 int blockpos;                 // position of the actual incoming byte in the telemetry data block
 SIncomingData* InData;        // pointer to access the telemetry data as a structure
-byte* pInData;                // pointer to access the telemetry data as a byte array
+char* pInData;                // pointer to access the telemetry data as a byte array
 SViewData Screen[2];          // store the actual and the previous screen data
-byte ActiveCar;               // active car profile
+char ActiveCar;               // active car profile
 
 // variables to manage screen layout
 SScreenLayout ScreenLayout;            // store screen layout
@@ -239,15 +243,18 @@ void UploadProfiles()
   CarProfile[ID_Skippy].RPMscale = 20.625;  // 6600 / 320; max RPM divided by screen width
   CarProfile[ID_Skippy].WaterTemp = 90;
 
-  CarProfile[ID_Skippy].SLI[0] = 4700;
-  CarProfile[ID_Skippy].SLI[1] = 4900;
-  CarProfile[ID_Skippy].SLI[2] = 5100;
-  CarProfile[ID_Skippy].SLI[3] = 5300;
-  CarProfile[ID_Skippy].SLI[4] = 5500;
-  CarProfile[ID_Skippy].SLI[5] = 5700;
-  CarProfile[ID_Skippy].SLI[6] = 5900;
-  CarProfile[ID_Skippy].SLI[7] = 6100;
-
+  for (int i = 0; i<NUMOFGEARS; i++)
+  {
+    CarProfile[ID_Skippy].SLI[i][0] = 4700;
+    CarProfile[ID_Skippy].SLI[i][1] = 4900;
+    CarProfile[ID_Skippy].SLI[i][2] = 5100;
+    CarProfile[ID_Skippy].SLI[i][3] = 5300;
+    CarProfile[ID_Skippy].SLI[i][4] = 5500;
+    CarProfile[ID_Skippy].SLI[i][5] = 5700;
+    CarProfile[ID_Skippy].SLI[i][6] = 5900;
+    CarProfile[ID_Skippy].SLI[i][7] = 6100;
+  }
+                               
   // CTS-V
   CarProfile[ID_CTS_V].CarName[0] = 'C';
   CarProfile[ID_CTS_V].CarName[1] = 'T';
@@ -261,14 +268,17 @@ void UploadProfiles()
   CarProfile[ID_CTS_V].RPMscale = 25;     // 8000 / 320
   CarProfile[ID_CTS_V].WaterTemp = 110;
 
-  CarProfile[ID_CTS_V].SLI[0] = 6600;
-  CarProfile[ID_CTS_V].SLI[1] = 6700;
-  CarProfile[ID_CTS_V].SLI[2] = 6800;
-  CarProfile[ID_CTS_V].SLI[3] = 6900;
-  CarProfile[ID_CTS_V].SLI[4] = 7000;
-  CarProfile[ID_CTS_V].SLI[5] = 7100;
-  CarProfile[ID_CTS_V].SLI[6] = 7200;
-  CarProfile[ID_CTS_V].SLI[7] = 7300;
+  for (int i = 0; i<NUMOFGEARS; i++)
+  {
+    CarProfile[ID_CTS_V].SLI[i][0] = 6600;
+    CarProfile[ID_CTS_V].SLI[i][1] = 6700;
+    CarProfile[ID_CTS_V].SLI[i][2] = 6800;
+    CarProfile[ID_CTS_V].SLI[i][3] = 6900;
+    CarProfile[ID_CTS_V].SLI[i][4] = 7000;
+    CarProfile[ID_CTS_V].SLI[i][5] = 7100;
+    CarProfile[ID_CTS_V].SLI[i][6] = 7200;
+    CarProfile[ID_CTS_V].SLI[i][7] = 7300;
+  }
   
   // MX-5 NC
   CarProfile[ID_MX5_NC].CarName[0] = 'M';
@@ -284,15 +294,18 @@ void UploadProfiles()
   CarProfile[ID_MX5_NC].RPMscale = 22.8125;  // 7300 / 320
   CarProfile[ID_MX5_NC].WaterTemp = 100;
 
-  CarProfile[ID_MX5_NC].SLI[0] = 6000;
-  CarProfile[ID_MX5_NC].SLI[1] = 6125;
-  CarProfile[ID_MX5_NC].SLI[2] = 6250;
-  CarProfile[ID_MX5_NC].SLI[3] = 6375;
-  CarProfile[ID_MX5_NC].SLI[4] = 6500;
-  CarProfile[ID_MX5_NC].SLI[5] = 6625;
-  CarProfile[ID_MX5_NC].SLI[6] = 6750;
-  CarProfile[ID_MX5_NC].SLI[7] = 6850;
+  for (int i = 0; i<NUMOFGEARS; i++)
+  {
+    CarProfile[ID_MX5_NC].SLI[i][0] = 6000;
+    CarProfile[ID_MX5_NC].SLI[i][1] = 6125;
+    CarProfile[ID_MX5_NC].SLI[i][2] = 6250;
+    CarProfile[ID_MX5_NC].SLI[i][3] = 6375;
+    CarProfile[ID_MX5_NC].SLI[i][4] = 6500;
+    CarProfile[ID_MX5_NC].SLI[i][5] = 6625;
+    CarProfile[ID_MX5_NC].SLI[i][6] = 6750;
+    CarProfile[ID_MX5_NC].SLI[i][7] = 6850;
 
+  }
   // MX-5 ND
   CarProfile[ID_MX5_ND].CarName[0] = 'M';
   CarProfile[ID_MX5_ND].CarName[1] = 'X';
@@ -307,14 +320,17 @@ void UploadProfiles()
   CarProfile[ID_MX5_ND].RPMscale = 23.4375;  // 7500 / 320
   CarProfile[ID_MX5_ND].WaterTemp = 100;
 
-  CarProfile[ID_MX5_ND].SLI[0] = 5500;
-  CarProfile[ID_MX5_ND].SLI[1] = 5700;
-  CarProfile[ID_MX5_ND].SLI[2] = 5900;
-  CarProfile[ID_MX5_ND].SLI[3] = 6100;
-  CarProfile[ID_MX5_ND].SLI[4] = 6300;
-  CarProfile[ID_MX5_ND].SLI[5] = 6500;
-  CarProfile[ID_MX5_ND].SLI[6] = 6900;
-  CarProfile[ID_MX5_ND].SLI[7] = 7200;
+  for (int i = 0; i<NUMOFGEARS; i++)
+  {
+    CarProfile[ID_MX5_ND].SLI[i][0] = 4600;
+    CarProfile[ID_MX5_ND].SLI[i][1] = 5000;
+    CarProfile[ID_MX5_ND].SLI[i][2] = 5400;
+    CarProfile[ID_MX5_ND].SLI[i][3] = 5750;
+    CarProfile[ID_MX5_ND].SLI[i][4] = 6100;
+    CarProfile[ID_MX5_ND].SLI[i][5] = 6800;
+    CarProfile[ID_MX5_ND].SLI[i][6] = 7200;
+    CarProfile[ID_MX5_ND].SLI[i][7] = 7200;
+  }
 
   // Formula Renault 2.0
   CarProfile[ID_FR20].CarName[0] = 'F';
@@ -330,14 +346,17 @@ void UploadProfiles()
   CarProfile[ID_FR20].RPMscale = 23.75;    // 7600 / 320
   CarProfile[ID_FR20].WaterTemp = 90;
 
-  CarProfile[ID_FR20].SLI[0] = 6600;
-  CarProfile[ID_FR20].SLI[1] = 6700;
-  CarProfile[ID_FR20].SLI[2] = 6800;
-  CarProfile[ID_FR20].SLI[3] = 6900;
-  CarProfile[ID_FR20].SLI[4] = 7000;
-  CarProfile[ID_FR20].SLI[5] = 7100;
-  CarProfile[ID_FR20].SLI[6] = 7200;
-  CarProfile[ID_FR20].SLI[7] = 7300;
+  for (int i = 0; i<NUMOFGEARS; i++)
+  {
+    CarProfile[ID_FR20].SLI[i][0] = 6600;
+    CarProfile[ID_FR20].SLI[i][1] = 6700;
+    CarProfile[ID_FR20].SLI[i][2] = 6800;
+    CarProfile[ID_FR20].SLI[i][3] = 6900;
+    CarProfile[ID_FR20].SLI[i][4] = 7000;
+    CarProfile[ID_FR20].SLI[i][5] = 7100;
+    CarProfile[ID_FR20].SLI[i][6] = 7200;
+    CarProfile[ID_FR20].SLI[i][7] = 7300;
+  }
 
   // Dallara Formula 3
   CarProfile[ID_DF3].CarName[0] = 'D';
@@ -353,15 +372,85 @@ void UploadProfiles()
   CarProfile[ID_DF3].RPMscale = 23.125;   // 7400 / 320
   CarProfile[ID_DF3].WaterTemp = 110;
 
-  CarProfile[ID_DF3].SLI[0] = 6450;
-  CarProfile[ID_DF3].SLI[1] = 6550;
-  CarProfile[ID_DF3].SLI[2] = 6650;
-  CarProfile[ID_DF3].SLI[3] = 6750;
-  CarProfile[ID_DF3].SLI[4] = 6850;
-  CarProfile[ID_DF3].SLI[5] = 6950;
-  CarProfile[ID_DF3].SLI[6] = 7050;
-  CarProfile[ID_DF3].SLI[7] = 7150;
+  for (int i = 0; i<NUMOFGEARS; i++)
+  {
+    CarProfile[ID_DF3].SLI[i][0] = 6450;
+    CarProfile[ID_DF3].SLI[i][1] = 6550;
+    CarProfile[ID_DF3].SLI[i][2] = 6650;
+    CarProfile[ID_DF3].SLI[i][3] = 6750;
+    CarProfile[ID_DF3].SLI[i][4] = 6850;
+    CarProfile[ID_DF3].SLI[i][5] = 6950;
+    CarProfile[ID_DF3].SLI[i][6] = 7050;
+    CarProfile[ID_DF3].SLI[i][7] = 7150;
+  }
 
+  // Porsche 992 GT3 cup - WIP
+  CarProfile[ID_992_CUP].CarName[0] = '9';
+  CarProfile[ID_992_CUP].CarName[1] = '9';
+  CarProfile[ID_992_CUP].CarName[2] = '2';
+  CarProfile[ID_992_CUP].CarName[3] = 'c';
+  CarProfile[ID_992_CUP].CarName[4] = 'u';
+  CarProfile[ID_992_CUP].CarName[5] = 'p';
+  CarProfile[ID_992_CUP].CarName[6] = 0;
+
+  CarProfile[ID_992_CUP].Fuel = 30;
+  CarProfile[ID_992_CUP].RPM = 298;         // 8200 / RPMscale
+  CarProfile[ID_992_CUP].RPMscale = 27.5;   // 8800 / 320
+  CarProfile[ID_992_CUP].WaterTemp = 110;
+
+
+  for (int i = 0; i<3; i++)
+  {
+    CarProfile[ID_992_CUP].SLI[i][0] = 1500;
+    CarProfile[ID_992_CUP].SLI[i][1] = 1500;
+    CarProfile[ID_992_CUP].SLI[i][2] = 1500;
+    CarProfile[ID_992_CUP].SLI[i][3] = 3000;
+    CarProfile[ID_992_CUP].SLI[i][4] = 4500;
+    CarProfile[ID_992_CUP].SLI[i][5] = 5000;
+    CarProfile[ID_992_CUP].SLI[i][6] = 5500;
+    CarProfile[ID_992_CUP].SLI[i][7] = 6000;
+  }
+
+    CarProfile[ID_992_CUP].SLI[3][0] = 4000;
+    CarProfile[ID_992_CUP].SLI[3][1] = 4500;
+    CarProfile[ID_992_CUP].SLI[3][2] = 5000;
+    CarProfile[ID_992_CUP].SLI[3][3] = 5500;
+    CarProfile[ID_992_CUP].SLI[3][4] = 6000;
+    CarProfile[ID_992_CUP].SLI[3][5] = 6500;
+    CarProfile[ID_992_CUP].SLI[3][6] = 7000;
+    CarProfile[ID_992_CUP].SLI[3][7] = 7500;
+
+    CarProfile[ID_992_CUP].SLI[4][0] = 5200;
+    CarProfile[ID_992_CUP].SLI[4][1] = 5600;
+    CarProfile[ID_992_CUP].SLI[4][2] = 6000;
+    CarProfile[ID_992_CUP].SLI[4][3] = 6400;
+    CarProfile[ID_992_CUP].SLI[4][4] = 6800;
+    CarProfile[ID_992_CUP].SLI[4][5] = 7200;
+    CarProfile[ID_992_CUP].SLI[4][6] = 7600;
+    CarProfile[ID_992_CUP].SLI[4][7] = 8000;
+
+    CarProfile[ID_992_CUP].SLI[5][0] = 6800;
+    CarProfile[ID_992_CUP].SLI[5][1] = 7000;
+    CarProfile[ID_992_CUP].SLI[5][2] = 7200;
+    CarProfile[ID_992_CUP].SLI[5][3] = 7400;
+    CarProfile[ID_992_CUP].SLI[5][4] = 7600;
+    CarProfile[ID_992_CUP].SLI[5][5] = 7800;
+    CarProfile[ID_992_CUP].SLI[5][6] = 8100;
+    CarProfile[ID_992_CUP].SLI[5][7] = 8300;
+
+  for (int i = 6; i<NUMOFGEARS; i++)
+  {
+    CarProfile[ID_992_CUP].SLI[i][0] = 7700;
+    CarProfile[ID_992_CUP].SLI[i][1] = 7800;
+    CarProfile[ID_992_CUP].SLI[i][2] = 7900;
+    CarProfile[ID_992_CUP].SLI[i][3] = 8000;
+    CarProfile[ID_992_CUP].SLI[i][4] = 8100;
+    CarProfile[ID_992_CUP].SLI[i][5] = 8200;
+    CarProfile[ID_992_CUP].SLI[i][6] = 8300;
+    CarProfile[ID_992_CUP].SLI[i][7] = 8400;
+  }
+
+  // buttons for car selection menu
   // use the formula to determine button outline: (x*80)+10, (y*54)+30, 60, 36)
   // x and y is the position in the 4x4 matrix
   for (int i=0; i<NUMOFCARS; i++)
@@ -376,7 +465,7 @@ void UploadProfiles()
 }
 
 // draw the background and the active instruments for the car
-void DrawBackground(byte ID)
+void DrawBackground(char ID)
 {
   tft.fillScreen(0);  // clear screen
 
@@ -523,7 +612,7 @@ void DrawBackground(byte ID)
         break;
 
       case ID_DF3:
-        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_FR20].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_DF3].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
         tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
         tft.drawLine(86, ScreenLayout.RPMPosY+28, 86, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
         tft.drawLine(173, ScreenLayout.RPMPosY+28, 173, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
@@ -538,7 +627,28 @@ void DrawBackground(byte ID)
         tft.println("50");
         tft.setCursor(298, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
         tft.println("70");
-        tft.drawLine(CarProfile[ID_FR20].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        tft.drawLine(CarProfile[ID_DF3].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        break;
+
+      case ID_992_CUP:
+      // WIP
+        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_992_CUP].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft.drawLine(73, ScreenLayout.RPMPosY+28, 73, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft.drawLine(145, ScreenLayout.RPMPosY+28, 145, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft.drawLine(218, ScreenLayout.RPMPosY+28, 218, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft.drawLine(291, ScreenLayout.RPMPosY+28, 291, ScreenLayout.RPMPosY+34, bc); // 8000 rpm mark
+        tft.setTextColor(bc, 0);
+        tft.setTextSize(1);
+        tft.setCursor(31, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft.println("10");
+        tft.setCursor(104, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft.println("30");
+        tft.setCursor(177, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft.println("50");
+        tft.setCursor(250, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft.println("70");
+        tft.drawLine(CarProfile[ID_992_CUP].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
     }
   }
@@ -556,9 +666,9 @@ void DrawBackground(byte ID)
 }
 
 // draw the engine warning icons
-void DrawEngineWarnings(byte ID, byte Warning, byte WarningPrev)
+void DrawEngineWarnings(char ID, char Warning, char WarningPrev)
 {
-  byte Filtered, FilteredPrev;
+  char Filtered, FilteredPrev;
 
   // draw fuel pressure light
   // check only the bit which contains this warning light
@@ -602,7 +712,7 @@ void DrawEngineWarnings(byte ID, byte Warning, byte WarningPrev)
 }
 
 // draw fuel gauge, value is right aligned
-void DrawFuel(byte ID, int Fuel, int FuelPrev)
+void DrawFuel(char ID, int Fuel, int FuelPrev)
 {
   tft.setTextSize(2);
   if (Fuel <= CarProfile[ID].Fuel) tft.setTextColor(wc, 0);
@@ -639,7 +749,7 @@ void DrawFuel(byte ID, int Fuel, int FuelPrev)
 }
 
 // draw gear number
-void DrawGear(byte ID, signed char Gear)
+void DrawGear(char ID, signed char Gear)
 {
   tft.setTextSize(5);
   if (Gear < 0)  // reverse gear
@@ -651,7 +761,7 @@ void DrawGear(byte ID, signed char Gear)
   else
   {
     tft.setTextColor(dc, 0);
-    if (Gear<10)
+    if (Gear<NUMOFGEARS)
     {
       tft.setCursor(ScreenLayout.GearPosX, ScreenLayout.GearPosY);
       tft.print(Gear, DEC);
@@ -660,7 +770,7 @@ void DrawGear(byte ID, signed char Gear)
 }
 
 // draw water temperature gauge, value is right aligned
-void DrawWaterTemp(byte ID, int WaterTemp, int WaterTempPrev)
+void DrawWaterTemp(char ID, int WaterTemp, int WaterTempPrev)
 {
   tft.setTextSize(2);
   if (WaterTemp >= CarProfile[ID].WaterTemp) tft.setTextColor(wc, 0);
@@ -692,7 +802,7 @@ void DrawWaterTemp(byte ID, int WaterTemp, int WaterTempPrev)
 }
 
 // draw RPM gauge
-void DrawRPM(byte ID, int RPM, int RPMPrev, byte Limiter, byte LimiterPrev)
+void DrawRPM(char ID, int RPM, int RPMPrev, char Limiter, char LimiterPrev)
 {
   if (Limiter == 0 && LimiterPrev != 0) //  RPM limiter was just switched off so we have to clear off the text
   {
@@ -734,7 +844,7 @@ void DrawRPM(byte ID, int RPM, int RPMPrev, byte Limiter, byte LimiterPrev)
 }
 
 // draw speed gauge, value is right aligned
-void DrawSpeed(byte ID, int Speed, int SpeedPrev)
+void DrawSpeed(char ID, int Speed, int SpeedPrev)
 {
   tft.setTextColor(dc, 0);
   tft.setTextSize(2);
@@ -764,7 +874,7 @@ void DrawSpeed(byte ID, int Speed, int SpeedPrev)
 }
 
 // draw shift light indicator
-void DrawSLI(byte ID, int SLI, int SLIPrev)
+void DrawSLI(char ID, int SLI, int SLIPrev)
 {
   if (SLI < SLIPrev)
   {
@@ -883,7 +993,7 @@ void setup()
  
   // initialize internal variables
   InData = new SIncomingData;  // allocate the data structure of the telemetry data
-  pInData = (byte*)InData;     // set the byte array pointer to the telemetry data
+  pInData = (char*)InData;     // set the byte array pointer to the telemetry data
   ResetInternalData();
 
   UploadProfiles();
@@ -896,7 +1006,7 @@ void loop()
   int rpm_int, pressed_button;
   byte Limiter[2];
   TS_Point p; // screen touch coordinates
-  char PressedButton;
+  char PressedButton, gear;
 
   // read serial port
   if (Serial.available() > 0)
@@ -955,17 +1065,18 @@ void loop()
                 
                 // draw shift light indicator
                 rpm_int = (int)InData->RPM;
-                if (rpm_int <= CarProfile[ActiveCar].SLI[0]) Screen[1].SLI = 0; // determine how many light to be activated for the current gear
+                gear = InData->Gear+1;  // "-1" corresponds to reverse but index should start with "0"
+                if (rpm_int <= CarProfile[ActiveCar].SLI[gear][0]) Screen[1].SLI = 0; // determine how many light to be activated for the current gear
                 else
                 {
-                  if (rpm_int > CarProfile[ActiveCar].SLI[7]) Screen[1].SLI = 8;
-                  else if (rpm_int > CarProfile[ActiveCar].SLI[6]) Screen[1].SLI = 7;
-                       else if (rpm_int > CarProfile[ActiveCar].SLI[5]) Screen[1].SLI = 6;
-                            else if (rpm_int > CarProfile[ActiveCar].SLI[4]) Screen[1].SLI = 5;
-                                 else if (rpm_int > CarProfile[ActiveCar].SLI[3]) Screen[1].SLI = 4;
-                                      else if (rpm_int > CarProfile[ActiveCar].SLI[2]) Screen[1].SLI = 3;
-                                           else if (rpm_int > CarProfile[ActiveCar].SLI[1]) Screen[1].SLI = 2;
-                                                else if (rpm_int > CarProfile[ActiveCar].SLI[0]) Screen[1].SLI = 1;
+                  if (rpm_int > CarProfile[ActiveCar].SLI[gear][7]) Screen[1].SLI = 8;
+                  else if (rpm_int > CarProfile[ActiveCar].SLI[gear][6]) Screen[1].SLI = 7;
+                       else if (rpm_int > CarProfile[ActiveCar].SLI[gear][5]) Screen[1].SLI = 6;
+                            else if (rpm_int > CarProfile[ActiveCar].SLI[gear][4]) Screen[1].SLI = 5;
+                                 else if (rpm_int > CarProfile[ActiveCar].SLI[gear][3]) Screen[1].SLI = 4;
+                                      else if (rpm_int > CarProfile[ActiveCar].SLI[gear][2]) Screen[1].SLI = 3;
+                                           else if (rpm_int > CarProfile[ActiveCar].SLI[gear][1]) Screen[1].SLI = 2;
+                                                else if (rpm_int > CarProfile[ActiveCar].SLI[gear][0]) Screen[1].SLI = 1;
                 }
                 if (Screen[0].SLI != Screen[1].SLI && ScreenLayout.ShowSLI == true) DrawSLI(ActiveCar, Screen[1].SLI, Screen[0].SLI);
 
