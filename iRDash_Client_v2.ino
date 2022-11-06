@@ -41,7 +41,8 @@
 #define wc 64300       // warning color;     red: 255 (11111), green: 100 (011001), blue: 100 (01100)
 #define bc 17832       // background color;  red: 70  (01000), green: 180 (101101), blue: 70  (01000)
 #define icon_ok  32768 //                    red: 135 (10000), green: 0   (000000), blue: 0   (00000)
-#define icon_nok 63488 //                    red: 255 (11111), green: 0   (000000), blue: 0   (00000)
+#define icon_nok 64300 //                    red: 255 (11111), green: 100  (011001), blue: 100  (01100)
+//#define icon_nok 63878 //                    red: 255 (11111), green: 51  (001100), blue: 51  (00110)
 
 // define the icon bitmaps
 const unsigned char fuelpressure [128] = {
@@ -400,54 +401,73 @@ void UploadProfiles()
 
 
   for (int i = 0; i<3; i++)
+  // reverse, neutral, 1st gear
   {
     CarProfile[ID_992_CUP].SLI[i][0] = 1500;
     CarProfile[ID_992_CUP].SLI[i][1] = 1500;
     CarProfile[ID_992_CUP].SLI[i][2] = 1500;
     CarProfile[ID_992_CUP].SLI[i][3] = 3000;
     CarProfile[ID_992_CUP].SLI[i][4] = 4500;
-    CarProfile[ID_992_CUP].SLI[i][5] = 5000;
-    CarProfile[ID_992_CUP].SLI[i][6] = 5500;
-    CarProfile[ID_992_CUP].SLI[i][7] = 6000;
+    CarProfile[ID_992_CUP].SLI[i][5] = 5350;
+    CarProfile[ID_992_CUP].SLI[i][6] = 6200;
+    CarProfile[ID_992_CUP].SLI[i][7] = 7050;
   }
 
-    CarProfile[ID_992_CUP].SLI[3][0] = 4000;
-    CarProfile[ID_992_CUP].SLI[3][1] = 4500;
-    CarProfile[ID_992_CUP].SLI[3][2] = 5000;
-    CarProfile[ID_992_CUP].SLI[3][3] = 5500;
-    CarProfile[ID_992_CUP].SLI[3][4] = 6000;
-    CarProfile[ID_992_CUP].SLI[3][5] = 6500;
-    CarProfile[ID_992_CUP].SLI[3][6] = 7000;
-    CarProfile[ID_992_CUP].SLI[3][7] = 7500;
+  // 2nd gear
+  CarProfile[ID_992_CUP].SLI[3][0] = 3900;
+  CarProfile[ID_992_CUP].SLI[3][1] = 4400;
+  CarProfile[ID_992_CUP].SLI[3][2] = 4900;
+  CarProfile[ID_992_CUP].SLI[3][3] = 5400;
+  CarProfile[ID_992_CUP].SLI[3][4] = 5900;
+  CarProfile[ID_992_CUP].SLI[3][5] = 6400;
+  CarProfile[ID_992_CUP].SLI[3][6] = 6900;
+  CarProfile[ID_992_CUP].SLI[3][7] = 7400;
 
-    CarProfile[ID_992_CUP].SLI[4][0] = 5200;
-    CarProfile[ID_992_CUP].SLI[4][1] = 5600;
-    CarProfile[ID_992_CUP].SLI[4][2] = 6000;
-    CarProfile[ID_992_CUP].SLI[4][3] = 6400;
-    CarProfile[ID_992_CUP].SLI[4][4] = 6800;
-    CarProfile[ID_992_CUP].SLI[4][5] = 7200;
-    CarProfile[ID_992_CUP].SLI[4][6] = 7600;
-    CarProfile[ID_992_CUP].SLI[4][7] = 8000;
+  // 3rd gear
+  CarProfile[ID_992_CUP].SLI[4][0] = 4825;
+  CarProfile[ID_992_CUP].SLI[4][1] = 5225;
+  CarProfile[ID_992_CUP].SLI[4][2] = 5625;
+  CarProfile[ID_992_CUP].SLI[4][3] = 6025;
+  CarProfile[ID_992_CUP].SLI[4][4] = 6425;
+  CarProfile[ID_992_CUP].SLI[4][5] = 6825;
+  CarProfile[ID_992_CUP].SLI[4][6] = 7225;
+  CarProfile[ID_992_CUP].SLI[4][7] = 7625;
 
-    CarProfile[ID_992_CUP].SLI[5][0] = 6800;
-    CarProfile[ID_992_CUP].SLI[5][1] = 7000;
-    CarProfile[ID_992_CUP].SLI[5][2] = 7200;
-    CarProfile[ID_992_CUP].SLI[5][3] = 7400;
-    CarProfile[ID_992_CUP].SLI[5][4] = 7600;
-    CarProfile[ID_992_CUP].SLI[5][5] = 7800;
-    CarProfile[ID_992_CUP].SLI[5][6] = 8100;
-    CarProfile[ID_992_CUP].SLI[5][7] = 8300;
+  // 4th gear
+  CarProfile[ID_992_CUP].SLI[5][0] = 6425;
+  CarProfile[ID_992_CUP].SLI[5][1] = 6625;
+  CarProfile[ID_992_CUP].SLI[5][2] = 6825;
+  CarProfile[ID_992_CUP].SLI[5][3] = 7025;
+  CarProfile[ID_992_CUP].SLI[5][4] = 7225;
+  CarProfile[ID_992_CUP].SLI[5][5] = 7425;
+  CarProfile[ID_992_CUP].SLI[5][6] = 7725;
+  CarProfile[ID_992_CUP].SLI[5][7] = 7925;
 
+  // 5th gear
   for (int i = 6; i<NUMOFGEARS; i++)
   {
-    CarProfile[ID_992_CUP].SLI[i][0] = 7700;
-    CarProfile[ID_992_CUP].SLI[i][1] = 7800;
-    CarProfile[ID_992_CUP].SLI[i][2] = 7900;
-    CarProfile[ID_992_CUP].SLI[i][3] = 8000;
-    CarProfile[ID_992_CUP].SLI[i][4] = 8100;
-    CarProfile[ID_992_CUP].SLI[i][5] = 8200;
-    CarProfile[ID_992_CUP].SLI[i][6] = 8300;
-    CarProfile[ID_992_CUP].SLI[i][7] = 8400;
+    CarProfile[ID_992_CUP].SLI[i][0] = 7275;
+    CarProfile[ID_992_CUP].SLI[i][1] = 7375;
+    CarProfile[ID_992_CUP].SLI[i][2] = 7475;
+    CarProfile[ID_992_CUP].SLI[i][3] = 7575;
+    CarProfile[ID_992_CUP].SLI[i][4] = 7675;
+    CarProfile[ID_992_CUP].SLI[i][5] = 7775;
+    CarProfile[ID_992_CUP].SLI[i][6] = 7875;
+    CarProfile[ID_992_CUP].SLI[i][7] = 7975;
+  }
+
+  // 6th gear and above
+  // no display, move indicators above of real rpm range
+  for (int i = 7; i<NUMOFGEARS; i++)
+  {
+    CarProfile[ID_992_CUP].SLI[i][0] = 9200;
+    CarProfile[ID_992_CUP].SLI[i][1] = 9300;
+    CarProfile[ID_992_CUP].SLI[i][2] = 9400;
+    CarProfile[ID_992_CUP].SLI[i][3] = 9500;
+    CarProfile[ID_992_CUP].SLI[i][4] = 9600;
+    CarProfile[ID_992_CUP].SLI[i][5] = 9700;
+    CarProfile[ID_992_CUP].SLI[i][6] = 9800;
+    CarProfile[ID_992_CUP].SLI[i][7] = 9900;
   }
 
   // buttons for car selection menu

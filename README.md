@@ -18,7 +18,7 @@ Currently it has profile for:
 - MX-5 (NC and ND)
 - Formula Renault 2.0
 - Dallara Formula 3
-- Porsche 911 GT3 cup (992)
+- Porsche 911 GT3 cup (992) // updated for 2022 season 4 
 
 The program is developed on a Geekcreit ESP32 dev board and a 320x240 resolution touch sensitive SPI serial TFT display.
 Difference to the previous version is the move to Adafruit GFX library from the UTFT libraries. UTFT does not work on ESP32.
