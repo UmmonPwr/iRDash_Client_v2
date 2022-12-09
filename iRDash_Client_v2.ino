@@ -23,16 +23,17 @@
 #define TOUCH_Y_MAX 3895
 
 // define car identification numbers
-#define NUMOFCARS  7    // number of car profiles, maximum is 16
+#define NUMOFCARS  8    // number of car profiles, maximum is 16
 #define NUMOFGEARS 10   // maximum number of gears including reverse and neutral
-#define DEFAULTCAR 6    // car profile to show at startup
-#define ID_Skippy  0
-#define ID_CTS_V   1
-#define ID_MX5_NC  2
-#define ID_MX5_ND  3
-#define ID_FR20    4
-#define ID_DF3     5
-#define ID_992_CUP 6
+#define DEFAULTCAR 5    // car profile to show at startup
+#define ID_Skippy  0    // Skip Barber
+#define ID_CTS_V   1    // Cadillac CTS-V
+#define ID_MX5_NC  2    // Mazda MX5 NC
+#define ID_MX5_ND  3    // Mazda MX5 ND
+#define ID_FR20    4    // Formula Renault 2.0
+#define ID_DF3     5    // Dallara Formula 3
+#define ID_992_CUP 6    // Porsche 911 GT3 cup (992)
+#define ID_GR86    7    // Toyota GR86
 
 // define the drawing colors, rgb components in 8 bit range in comment
 // color value in 16 bit; 5 bit red, 6 bit green, 5 bit blue format
@@ -42,7 +43,6 @@
 #define bc 17832       // background color;  red: 70  (01000), green: 180 (101101), blue: 70  (01000)
 #define icon_ok  32768 //                    red: 135 (10000), green: 0   (000000), blue: 0   (00000)
 #define icon_nok 64300 //                    red: 255 (11111), green: 100  (011001), blue: 100  (01100)
-//#define icon_nok 63878 //                    red: 255 (11111), green: 51  (001100), blue: 51  (00110)
 
 // define the icon bitmaps
 const unsigned char fuelpressure [128] = {
@@ -93,7 +93,8 @@ const unsigned char water [128] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 };
 
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);  // software SPI
+//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);  // hardware SPI
 //ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC);  // PaulStoffregen's Optimized ILI9341 TFT Library - WIP
 XPT2046_Touchscreen ts(TOUCH_CS, TOUCH_IRQ);  // the default SPI pins will be used for the communication
 
@@ -230,7 +231,7 @@ void UploadProfiles()
   ScreenLayout.WaterTempPosY = 182;
   ScreenLayout.ShowWaterTemp = true;
 
-  // Skippy
+  // Skip Barber
   CarProfile[ID_Skippy].CarName[0] = 'S';
   CarProfile[ID_Skippy].CarName[1] = 'k';
   CarProfile[ID_Skippy].CarName[2] = 'i';
@@ -256,7 +257,7 @@ void UploadProfiles()
     CarProfile[ID_Skippy].SLI[i][7] = 6100;
   }
                                
-  // CTS-V
+  // Cadillac CTS-V
   CarProfile[ID_CTS_V].CarName[0] = 'C';
   CarProfile[ID_CTS_V].CarName[1] = 'T';
   CarProfile[ID_CTS_V].CarName[2] = 'S';
@@ -281,7 +282,7 @@ void UploadProfiles()
     CarProfile[ID_CTS_V].SLI[i][7] = 7300;
   }
   
-  // MX-5 NC
+  // Mazda MX-5 NC
   CarProfile[ID_MX5_NC].CarName[0] = 'M';
   CarProfile[ID_MX5_NC].CarName[1] = 'X';
   CarProfile[ID_MX5_NC].CarName[2] = '5';
@@ -307,7 +308,7 @@ void UploadProfiles()
     CarProfile[ID_MX5_NC].SLI[i][7] = 6850;
 
   }
-  // MX-5 ND
+  // Mazda MX-5 ND
   CarProfile[ID_MX5_ND].CarName[0] = 'M';
   CarProfile[ID_MX5_ND].CarName[1] = 'X';
   CarProfile[ID_MX5_ND].CarName[2] = '5';
@@ -368,7 +369,7 @@ void UploadProfiles()
   CarProfile[ID_DF3].CarName[5] = '3';
   CarProfile[ID_DF3].CarName[6] = 0;
 
-  CarProfile[ID_DF3].Fuel = 30;
+  CarProfile[ID_DF3].Fuel = 10;
   CarProfile[ID_DF3].RPM = 305;           // 7050 / RPMscale
   CarProfile[ID_DF3].RPMscale = 23.125;   // 7400 / 320
   CarProfile[ID_DF3].WaterTemp = 110;
@@ -385,7 +386,7 @@ void UploadProfiles()
     CarProfile[ID_DF3].SLI[i][7] = 7150;
   }
 
-  // Porsche 992 GT3 cup - WIP
+  // Porsche 992 GT3 cup
   CarProfile[ID_992_CUP].CarName[0] = '9';
   CarProfile[ID_992_CUP].CarName[1] = '9';
   CarProfile[ID_992_CUP].CarName[2] = '2';
@@ -468,6 +469,30 @@ void UploadProfiles()
     CarProfile[ID_992_CUP].SLI[i][5] = 9700;
     CarProfile[ID_992_CUP].SLI[i][6] = 9800;
     CarProfile[ID_992_CUP].SLI[i][7] = 9900;
+  }
+
+  // Toyota GR86
+  CarProfile[ID_GR86].CarName[0] = 'G';
+  CarProfile[ID_GR86].CarName[1] = 'R';
+  CarProfile[ID_GR86].CarName[2] = '8';
+  CarProfile[ID_GR86].CarName[3] = '6';
+  CarProfile[ID_GR86].CarName[4] = 0;
+ 
+  CarProfile[ID_GR86].Fuel = 10;
+  CarProfile[ID_GR86].RPM = 296;          // 6950 / RPMscale
+  CarProfile[ID_GR86].RPMscale = 23.44;   // 7500 / 320
+  CarProfile[ID_GR86].WaterTemp = 95;
+
+  for (int i = 0; i<NUMOFGEARS; i++)
+  {
+    CarProfile[ID_GR86].SLI[i][0] = 6000; // 1st light
+    CarProfile[ID_GR86].SLI[i][1] = 6225; // added middle
+    CarProfile[ID_GR86].SLI[i][2] = 6450; // 2nd light
+    CarProfile[ID_GR86].SLI[i][3] = 6575; // added middle
+    CarProfile[ID_GR86].SLI[i][4] = 6700; // 3rd light
+    CarProfile[ID_GR86].SLI[i][5] = 6825; // added middle
+    CarProfile[ID_GR86].SLI[i][6] = 6950; // 4th light
+    CarProfile[ID_GR86].SLI[i][7] = 7250; // all blue
   }
 
   // buttons for car selection menu
@@ -651,7 +676,6 @@ void DrawBackground(char ID)
         break;
 
       case ID_992_CUP:
-      // WIP
         tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_992_CUP].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
         tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
         tft.drawLine(73, ScreenLayout.RPMPosY+28, 73, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
@@ -669,6 +693,25 @@ void DrawBackground(char ID)
         tft.setCursor(250, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
         tft.println("70");
         tft.drawLine(CarProfile[ID_992_CUP].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        break;
+
+      case ID_GR86:
+        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_GR86].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft.drawLine(85, ScreenLayout.RPMPosY+28, 85, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft.drawLine(171, ScreenLayout.RPMPosY+28, 171, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft.drawLine(256, ScreenLayout.RPMPosY+28, 256, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft.setTextColor(bc, 0);
+        tft.setTextSize(1);
+        tft.setCursor(38, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft.println("10");
+        tft.setCursor(123, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft.println("30");
+        tft.setCursor(208, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft.println("50");
+        tft.setCursor(294, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft.println("70");
+        tft.drawLine(CarProfile[ID_GR86].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
     }
   }
