@@ -22,12 +22,11 @@ Currently it has profile for:
 - Toyota GR86
 
 The program is developed on a Geekcreit ESP32 dev board and a 320x240 resolution touch sensitive SPI serial TFT display.
-Difference to the previous version is the move to Adafruit GFX library from the UTFT libraries. UTFT does not work on ESP32.
+Project is moved to Arduino GFX library from Adafruit GFX library. It has much better performance.
 
 To display the live data of iRacing it needs the "iRDash Server" program running on Windows host and connected to the Arduino board via USB.
 - https://github.com/UmmonPwr/iRDash-Server
 
 To compile the program you need the below libraries:
-- Adafruit GFX library
-- Adafruit display library
-- https://github.com/PaulStoffregen/XPT2046_Touchscreen
+- Arduino GFX library https://github.com/moononournation/Arduino_GFX
+- Touch sense library https://github.com/PaulStoffregen/XPT2046_Touchscreen

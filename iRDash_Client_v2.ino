@@ -1,8 +1,6 @@
 #include "SPI.h"
-#include "Adafruit_GFX.h"
-#include "Adafruit_ILI9341.h"
+#include "Arduino_GFX_Library.h"
 #include "XPT2046_Touchscreen.h"
-//#include "ILI9341_t3.h"  // PaulStoffregen's Optimized ILI9341 TFT Library - WIP
 
 // pin definitions for the display controller
 #define TFT_DC   32
@@ -93,9 +91,9 @@ const unsigned char water [128] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 };
 
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);  // software SPI
-//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);  // hardware SPI
-//ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC);  // PaulStoffregen's Optimized ILI9341 TFT Library - WIP
+Arduino_DataBus *bus = new Arduino_SWSPI(TFT_DC, TFT_CS, TFT_CLK, TFT_MOSI, TFT_MISO);
+Arduino_GFX *tft = new Arduino_ILI9341(bus, TFT_RST);
+
 XPT2046_Touchscreen ts(TOUCH_CS, TOUCH_IRQ);  // the default SPI pins will be used for the communication
 
 // bit fields of engine warnings for reference
@@ -512,47 +510,47 @@ void UploadProfiles()
 // draw the background and the active instruments for the car
 void DrawBackground(char ID)
 {
-  tft.fillScreen(0);  // clear screen
+  tft->fillScreen(0);  // clear screen
 
   if(ScreenLayout.ShowEngineWarnings == true)
   {
     // draw the off state warning lights
     // must match to the positions used in the "DrawEngineWarnings" function
-    tft.drawBitmap(ScreenLayout.EngineWarningsPosX +0, ScreenLayout.EngineWarningsPosY, fuelpressure, 32, 32, icon_ok);
-    tft.drawBitmap(ScreenLayout.EngineWarningsPosX +40, ScreenLayout.EngineWarningsPosY, oilpressure, 32, 32, icon_ok);
-    tft.drawBitmap(ScreenLayout.EngineWarningsPosX +80, ScreenLayout.EngineWarningsPosY, water, 32, 32, icon_ok);
-    tft.drawBitmap(ScreenLayout.EngineWarningsPosX +120, ScreenLayout.EngineWarningsPosY, stall, 32, 32, icon_ok);
+    tft->drawBitmap(ScreenLayout.EngineWarningsPosX +0, ScreenLayout.EngineWarningsPosY, fuelpressure, 32, 32, icon_ok);
+    tft->drawBitmap(ScreenLayout.EngineWarningsPosX +40, ScreenLayout.EngineWarningsPosY, oilpressure, 32, 32, icon_ok);
+    tft->drawBitmap(ScreenLayout.EngineWarningsPosX +80, ScreenLayout.EngineWarningsPosY, water, 32, 32, icon_ok);
+    tft->drawBitmap(ScreenLayout.EngineWarningsPosX +120, ScreenLayout.EngineWarningsPosY, stall, 32, 32, icon_ok);
     
   }
   
   if(ScreenLayout.ShowFuel == true)
   {
-    tft.setTextColor(dc, 0);
-    tft.setTextSize(2);
-    tft.setCursor(ScreenLayout.FuelPosX, ScreenLayout.FuelPosY);
-    tft.println("Fuel:");
-    tft.setCursor(ScreenLayout.FuelPosX+140, ScreenLayout.FuelPosY);
-    tft.println("L");
+    tft->setTextColor(dc, 0);
+    tft->setTextSize(2);
+    tft->setCursor(ScreenLayout.FuelPosX, ScreenLayout.FuelPosY);
+    tft->println("Fuel:");
+    tft->setCursor(ScreenLayout.FuelPosX+140, ScreenLayout.FuelPosY);
+    tft->println("L");
   }
 
   if(ScreenLayout.ShowSpeed == true)
   {
-    tft.setTextColor(dc, 0);
-    tft.setTextSize(2);
-    tft.setCursor(ScreenLayout.SpeedPosX, ScreenLayout.SpeedPosY);
-    tft.println("Speed:");
-    tft.setCursor(ScreenLayout.SpeedPosX+140, ScreenLayout.SpeedPosY);
-    tft.println("km/h");
+    tft->setTextColor(dc, 0);
+    tft->setTextSize(2);
+    tft->setCursor(ScreenLayout.SpeedPosX, ScreenLayout.SpeedPosY);
+    tft->println("Speed:");
+    tft->setCursor(ScreenLayout.SpeedPosX+140, ScreenLayout.SpeedPosY);
+    tft->println("km/h");
   }
 
   if(ScreenLayout.ShowWaterTemp == true)
   {
-    tft.setTextColor(dc, 0);
-    tft.setTextSize(2);
-    tft.setCursor(ScreenLayout.WaterTempPosX, ScreenLayout.WaterTempPosY);
-    tft.println("Water:");
-    tft.setCursor(ScreenLayout.WaterTempPosX+140, ScreenLayout.WaterTempPosY);
-    tft.println("C");
+    tft->setTextColor(dc, 0);
+    tft->setTextSize(2);
+    tft->setCursor(ScreenLayout.WaterTempPosX, ScreenLayout.WaterTempPosY);
+    tft->println("Water:");
+    tft->setCursor(ScreenLayout.WaterTempPosX+140, ScreenLayout.WaterTempPosY);
+    tft->println("C");
   }
   
   if(ScreenLayout.ShowRPM == true)
@@ -561,171 +559,171 @@ void DrawBackground(char ID)
     switch (ID)
     {
       case ID_Skippy:
-        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_Skippy].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
-        tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
-        tft.drawLine(97, ScreenLayout.RPMPosY+28, 97, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
-        tft.drawLine(194, ScreenLayout.RPMPosY+28, 194, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
-        tft.drawLine(291, ScreenLayout.RPMPosY+28, 291, ScreenLayout.RPMPosY+34, wc); // 6000 rpm mark, red
-        tft.setTextColor(bc, 0);
-        tft.setTextSize(1);
-        tft.setCursor(43, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
-        tft.println("10");
-        tft.setCursor(140, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
-        tft.println("30");
-        tft.setCursor(237, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
-        tft.println("50");
-        tft.drawLine(CarProfile[ID_Skippy].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        tft->drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_Skippy].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft->drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft->drawLine(97, ScreenLayout.RPMPosY+28, 97, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft->drawLine(194, ScreenLayout.RPMPosY+28, 194, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft->drawLine(291, ScreenLayout.RPMPosY+28, 291, ScreenLayout.RPMPosY+34, wc); // 6000 rpm mark, red
+        tft->setTextColor(bc, 0);
+        tft->setTextSize(1);
+        tft->setCursor(43, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft->println("10");
+        tft->setCursor(140, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft->println("30");
+        tft->setCursor(237, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft->println("50");
+        tft->drawLine(CarProfile[ID_Skippy].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
 
       case ID_CTS_V:
-        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_CTS_V].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
-        tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
-        tft.drawLine(80, ScreenLayout.RPMPosY+28, 80, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
-        tft.drawLine(160, ScreenLayout.RPMPosY+28, 160, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
-        tft.drawLine(240, ScreenLayout.RPMPosY+28, 240, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
-        tft.drawLine(319, ScreenLayout.RPMPosY+28, 319, ScreenLayout.RPMPosY+34, wc); // 8000 rpm mark, red
-        tft.setTextColor(bc, 0);
-        tft.setTextSize(1);
-        tft.setCursor(35, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
-        tft.println("10");
-        tft.setCursor(115, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
-        tft.println("30");
-        tft.setCursor(195, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
-        tft.println("50");
-        tft.setCursor(275, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
-        tft.println("70");
-        tft.drawLine(CarProfile[ID_CTS_V].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        tft->drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_CTS_V].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft->drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft->drawLine(80, ScreenLayout.RPMPosY+28, 80, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft->drawLine(160, ScreenLayout.RPMPosY+28, 160, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft->drawLine(240, ScreenLayout.RPMPosY+28, 240, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft->drawLine(319, ScreenLayout.RPMPosY+28, 319, ScreenLayout.RPMPosY+34, wc); // 8000 rpm mark, red
+        tft->setTextColor(bc, 0);
+        tft->setTextSize(1);
+        tft->setCursor(35, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft->println("10");
+        tft->setCursor(115, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft->println("30");
+        tft->setCursor(195, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft->println("50");
+        tft->setCursor(275, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft->println("70");
+        tft->drawLine(CarProfile[ID_CTS_V].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
 
       case ID_MX5_NC:
-        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_MX5_NC].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
-        tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
-        tft.drawLine(88, ScreenLayout.RPMPosY+28, 88, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
-        tft.drawLine(175, ScreenLayout.RPMPosY+28, 175, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
-        tft.drawLine(263, ScreenLayout.RPMPosY+28, 263, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
-        tft.setTextColor(bc, 0);
-        tft.setTextSize(1);
-        tft.setCursor(39, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
-        tft.println("10");
-        tft.setCursor(127, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
-        tft.println("30");
-        tft.setCursor(214, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
-        tft.println("50");
-        tft.setCursor(302, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
-        tft.setTextColor(wc, 0);
-        tft.println("70");
-        tft.drawLine(CarProfile[ID_MX5_NC].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        tft->drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_MX5_NC].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft->drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft->drawLine(88, ScreenLayout.RPMPosY+28, 88, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft->drawLine(175, ScreenLayout.RPMPosY+28, 175, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft->drawLine(263, ScreenLayout.RPMPosY+28, 263, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft->setTextColor(bc, 0);
+        tft->setTextSize(1);
+        tft->setCursor(39, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft->println("10");
+        tft->setCursor(127, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft->println("30");
+        tft->setCursor(214, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft->println("50");
+        tft->setCursor(302, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft->setTextColor(wc, 0);
+        tft->println("70");
+        tft->drawLine(CarProfile[ID_MX5_NC].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
 
       case ID_MX5_ND:
-        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_MX5_ND].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
-        tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
-        tft.drawLine(85, ScreenLayout.RPMPosY+28, 85, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
-        tft.drawLine(171, ScreenLayout.RPMPosY+28, 171, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
-        tft.drawLine(256, ScreenLayout.RPMPosY+28, 256, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
-        tft.setTextColor(bc, 0);
-        tft.setTextSize(1);
-        tft.setCursor(38, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
-        tft.println("10");
-        tft.setCursor(123, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
-        tft.println("30");
-        tft.setCursor(208, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
-        tft.println("50");
-        tft.setCursor(294, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
-        tft.setTextColor(wc, 0);
-        tft.println("70");
-        tft.drawLine(CarProfile[ID_MX5_ND].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        tft->drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_MX5_ND].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft->drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft->drawLine(85, ScreenLayout.RPMPosY+28, 85, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft->drawLine(171, ScreenLayout.RPMPosY+28, 171, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft->drawLine(256, ScreenLayout.RPMPosY+28, 256, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft->setTextColor(bc, 0);
+        tft->setTextSize(1);
+        tft->setCursor(38, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft->println("10");
+        tft->setCursor(123, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft->println("30");
+        tft->setCursor(208, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft->println("50");
+        tft->setCursor(294, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft->setTextColor(wc, 0);
+        tft->println("70");
+        tft->drawLine(CarProfile[ID_MX5_ND].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
 
       case ID_FR20:
-        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_FR20].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
-        tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
-        tft.drawLine(84, ScreenLayout.RPMPosY+28, 84, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
-        tft.drawLine(168, ScreenLayout.RPMPosY+28, 168, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
-        tft.drawLine(253, ScreenLayout.RPMPosY+28, 253, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
-        tft.setTextColor(bc, 0);
-        tft.setTextSize(1);
-        tft.setCursor(37, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
-        tft.println("10");
-        tft.setCursor(121, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
-        tft.println("30");
-        tft.setCursor(205, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
-        tft.println("50");
-        tft.setCursor(289, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
-        tft.println("70");
-        tft.drawLine(CarProfile[ID_FR20].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        tft->drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_FR20].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft->drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft->drawLine(84, ScreenLayout.RPMPosY+28, 84, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft->drawLine(168, ScreenLayout.RPMPosY+28, 168, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft->drawLine(253, ScreenLayout.RPMPosY+28, 253, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft->setTextColor(bc, 0);
+        tft->setTextSize(1);
+        tft->setCursor(37, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft->println("10");
+        tft->setCursor(121, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft->println("30");
+        tft->setCursor(205, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft->println("50");
+        tft->setCursor(289, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft->println("70");
+        tft->drawLine(CarProfile[ID_FR20].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
 
       case ID_DF3:
-        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_DF3].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
-        tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
-        tft.drawLine(86, ScreenLayout.RPMPosY+28, 86, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
-        tft.drawLine(173, ScreenLayout.RPMPosY+28, 173, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
-        tft.drawLine(259, ScreenLayout.RPMPosY+28, 259, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
-        tft.setTextColor(bc, 0);
-        tft.setTextSize(1);
-        tft.setCursor(38, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
-        tft.println("10");
-        tft.setCursor(125, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
-        tft.println("30");
-        tft.setCursor(211, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
-        tft.println("50");
-        tft.setCursor(298, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
-        tft.println("70");
-        tft.drawLine(CarProfile[ID_DF3].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        tft->drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_DF3].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft->drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft->drawLine(86, ScreenLayout.RPMPosY+28, 86, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft->drawLine(173, ScreenLayout.RPMPosY+28, 173, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft->drawLine(259, ScreenLayout.RPMPosY+28, 259, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft->setTextColor(bc, 0);
+        tft->setTextSize(1);
+        tft->setCursor(38, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft->println("10");
+        tft->setCursor(125, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft->println("30");
+        tft->setCursor(211, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft->println("50");
+        tft->setCursor(298, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft->println("70");
+        tft->drawLine(CarProfile[ID_DF3].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
 
       case ID_992_CUP:
-        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_992_CUP].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
-        tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
-        tft.drawLine(73, ScreenLayout.RPMPosY+28, 73, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
-        tft.drawLine(145, ScreenLayout.RPMPosY+28, 145, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
-        tft.drawLine(218, ScreenLayout.RPMPosY+28, 218, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
-        tft.drawLine(291, ScreenLayout.RPMPosY+28, 291, ScreenLayout.RPMPosY+34, bc); // 8000 rpm mark
-        tft.setTextColor(bc, 0);
-        tft.setTextSize(1);
-        tft.setCursor(31, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
-        tft.println("10");
-        tft.setCursor(104, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
-        tft.println("30");
-        tft.setCursor(177, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
-        tft.println("50");
-        tft.setCursor(250, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
-        tft.println("70");
-        tft.drawLine(CarProfile[ID_992_CUP].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        tft->drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_992_CUP].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft->drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft->drawLine(73, ScreenLayout.RPMPosY+28, 73, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft->drawLine(145, ScreenLayout.RPMPosY+28, 145, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft->drawLine(218, ScreenLayout.RPMPosY+28, 218, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft->drawLine(291, ScreenLayout.RPMPosY+28, 291, ScreenLayout.RPMPosY+34, bc); // 8000 rpm mark
+        tft->setTextColor(bc, 0);
+        tft->setTextSize(1);
+        tft->setCursor(31, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft->println("10");
+        tft->setCursor(104, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft->println("30");
+        tft->setCursor(177, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft->println("50");
+        tft->setCursor(250, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft->println("70");
+        tft->drawLine(CarProfile[ID_992_CUP].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
 
       case ID_GR86:
-        tft.drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_GR86].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
-        tft.drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
-        tft.drawLine(85, ScreenLayout.RPMPosY+28, 85, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
-        tft.drawLine(171, ScreenLayout.RPMPosY+28, 171, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
-        tft.drawLine(256, ScreenLayout.RPMPosY+28, 256, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
-        tft.setTextColor(bc, 0);
-        tft.setTextSize(1);
-        tft.setCursor(38, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
-        tft.println("10");
-        tft.setCursor(123, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
-        tft.println("30");
-        tft.setCursor(208, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
-        tft.println("50");
-        tft.setCursor(294, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
-        tft.println("70");
-        tft.drawLine(CarProfile[ID_GR86].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        tft->drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_GR86].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft->drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft->drawLine(85, ScreenLayout.RPMPosY+28, 85, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft->drawLine(171, ScreenLayout.RPMPosY+28, 171, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft->drawLine(256, ScreenLayout.RPMPosY+28, 256, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft->setTextColor(bc, 0);
+        tft->setTextSize(1);
+        tft->setCursor(38, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft->println("10");
+        tft->setCursor(123, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft->println("30");
+        tft->setCursor(208, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft->println("50");
+        tft->setCursor(294, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft->println("70");
+        tft->drawLine(CarProfile[ID_GR86].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
     }
   }
 
   // draw background lines
-  tft.drawLine(0, 143, 319, 143, bc);
-  tft.drawLine(0, 203, 319, 203, bc);
-  tft.drawRoundRect(270, 74, 49, 56, 5, bc);
+  tft->drawLine(0, 143, 319, 143, bc);
+  tft->drawLine(0, 203, 319, 203, bc);
+  tft->drawRoundRect(270, 74, 49, 56, 5, bc);
 
   // draw car name
-  tft.setCursor(271, 227);
-  tft.setTextColor(dc, 0);
-  tft.setTextSize(1);
-  tft.println(CarProfile[ID].CarName);
+  tft->setCursor(271, 227);
+  tft->setTextColor(dc, 0);
+  tft->setTextSize(1);
+  tft->println(CarProfile[ID].CarName);
 }
 
 // draw the engine warning icons
@@ -739,8 +737,8 @@ void DrawEngineWarnings(char ID, char Warning, char WarningPrev)
   FilteredPrev = WarningPrev & 0x02;
   if (Filtered != FilteredPrev)
   {
-    if (Filtered != 0) tft.drawBitmap(ScreenLayout.EngineWarningsPosX +0, ScreenLayout.EngineWarningsPosY, fuelpressure, 32, 32, icon_nok);
-    else tft.drawBitmap(ScreenLayout.EngineWarningsPosX +0, ScreenLayout.EngineWarningsPosY, fuelpressure, 32, 32, icon_ok);
+    if (Filtered != 0) tft->drawBitmap(ScreenLayout.EngineWarningsPosX +0, ScreenLayout.EngineWarningsPosY, fuelpressure, 32, 32, icon_nok);
+    else tft->drawBitmap(ScreenLayout.EngineWarningsPosX +0, ScreenLayout.EngineWarningsPosY, fuelpressure, 32, 32, icon_ok);
   }
 
   // draw oil pressure light
@@ -749,8 +747,8 @@ void DrawEngineWarnings(char ID, char Warning, char WarningPrev)
   FilteredPrev = WarningPrev & 0x04;
   if (Filtered != FilteredPrev)
   {
-    if (Filtered != 0) tft.drawBitmap(ScreenLayout.EngineWarningsPosX +40, ScreenLayout.EngineWarningsPosY, oilpressure, 32, 32, icon_nok);
-    else tft.drawBitmap(ScreenLayout.EngineWarningsPosX +40, ScreenLayout.EngineWarningsPosY, oilpressure, 32, 32, icon_ok);
+    if (Filtered != 0) tft->drawBitmap(ScreenLayout.EngineWarningsPosX +40, ScreenLayout.EngineWarningsPosY, oilpressure, 32, 32, icon_nok);
+    else tft->drawBitmap(ScreenLayout.EngineWarningsPosX +40, ScreenLayout.EngineWarningsPosY, oilpressure, 32, 32, icon_ok);
   }
 
   // draw water temp light
@@ -759,8 +757,8 @@ void DrawEngineWarnings(char ID, char Warning, char WarningPrev)
   FilteredPrev = WarningPrev & 0x01;
   if (Filtered != FilteredPrev)
   {
-    if (Filtered != 0) tft.drawBitmap(ScreenLayout.EngineWarningsPosX +80, ScreenLayout.EngineWarningsPosY, water, 32, 32, icon_nok);
-    else tft.drawBitmap(ScreenLayout.EngineWarningsPosX +80, ScreenLayout.EngineWarningsPosY, water, 32, 32, icon_ok);
+    if (Filtered != 0) tft->drawBitmap(ScreenLayout.EngineWarningsPosX +80, ScreenLayout.EngineWarningsPosY, water, 32, 32, icon_nok);
+    else tft->drawBitmap(ScreenLayout.EngineWarningsPosX +80, ScreenLayout.EngineWarningsPosY, water, 32, 32, icon_ok);
   }
 
   // draw stall sign light
@@ -769,65 +767,65 @@ void DrawEngineWarnings(char ID, char Warning, char WarningPrev)
   FilteredPrev = WarningPrev & 0x08;
   if (Filtered != FilteredPrev)
   {
-    if (Filtered != 0) tft.drawBitmap(ScreenLayout.EngineWarningsPosX +120, ScreenLayout.EngineWarningsPosY, stall, 32, 32, icon_nok);
-    else tft.drawBitmap(ScreenLayout.EngineWarningsPosX +120, ScreenLayout.EngineWarningsPosY, stall, 32, 32, icon_ok);
+    if (Filtered != 0) tft->drawBitmap(ScreenLayout.EngineWarningsPosX +120, ScreenLayout.EngineWarningsPosY, stall, 32, 32, icon_nok);
+    else tft->drawBitmap(ScreenLayout.EngineWarningsPosX +120, ScreenLayout.EngineWarningsPosY, stall, 32, 32, icon_ok);
   }
 }
 
 // draw fuel gauge, value is right aligned
 void DrawFuel(char ID, int Fuel, int FuelPrev)
 {
-  tft.setTextSize(2);
-  if (Fuel <= CarProfile[ID].Fuel) tft.setTextColor(wc, 0);
-  else tft.setTextColor(dc, 0);
+  tft->setTextSize(2);
+  if (Fuel <= CarProfile[ID].Fuel) tft->setTextColor(wc, 0);
+  else tft->setTextColor(dc, 0);
   
-  tft.setCursor(ScreenLayout.FuelPosX+112, ScreenLayout.FuelPosY);
-  tft.print(".");
-  tft.setCursor(ScreenLayout.FuelPosX+124, ScreenLayout.FuelPosY);
-  tft.print(Fuel % 10, DEC);
+  tft->setCursor(ScreenLayout.FuelPosX+112, ScreenLayout.FuelPosY);
+  tft->print(".");
+  tft->setCursor(ScreenLayout.FuelPosX+124, ScreenLayout.FuelPosY);
+  tft->print(Fuel % 10, DEC);
                   
   if (Fuel < 100)
   {
-    tft.setCursor(ScreenLayout.FuelPosX+100, ScreenLayout.FuelPosY);
-    tft.print(Fuel / 10, DEC);
+    tft->setCursor(ScreenLayout.FuelPosX+100, ScreenLayout.FuelPosY);
+    tft->print(Fuel / 10, DEC);
     if (FuelPrev >= 100)  // previous value was greater than 9, so we have to clear the above 10 value from the screen
     {
-      tft.fillRect(ScreenLayout.FuelPosX+76, ScreenLayout.FuelPosY, 24, 16, 0);
+      tft->fillRect(ScreenLayout.FuelPosX+76, ScreenLayout.FuelPosY, 24, 16, 0);
     }
   }
   else if (Fuel < 1000)
   {
-    tft.setCursor(ScreenLayout.FuelPosX+88, ScreenLayout.FuelPosY);
-    tft.print(Fuel / 10, DEC);
+    tft->setCursor(ScreenLayout.FuelPosX+88, ScreenLayout.FuelPosY);
+    tft->print(Fuel / 10, DEC);
     if (FuelPrev >= 1000)  // previous value was greater than 99, so we have to clear the above 100 value from the screen
     {
-      tft.fillRect(ScreenLayout.FuelPosX+76, ScreenLayout.FuelPosY, 12, 16, 0);
+      tft->fillRect(ScreenLayout.FuelPosX+76, ScreenLayout.FuelPosY, 12, 16, 0);
     }
   }
   else if (Fuel < 10000)
        {
-        tft.setCursor(ScreenLayout.FuelPosX+76, ScreenLayout.FuelPosY);
-        tft.print(Fuel / 10, DEC);
+        tft->setCursor(ScreenLayout.FuelPosX+76, ScreenLayout.FuelPosY);
+        tft->print(Fuel / 10, DEC);
        }
 }
 
 // draw gear number
 void DrawGear(char ID, signed char Gear)
 {
-  tft.setTextSize(5);
+  tft->setTextSize(5);
   if (Gear < 0)  // reverse gear
   {
-    tft.setTextColor(wc, 0);
-    tft.setCursor(ScreenLayout.GearPosX, ScreenLayout.GearPosY);
-    tft.print("R");
+    tft->setTextColor(wc, 0);
+    tft->setCursor(ScreenLayout.GearPosX, ScreenLayout.GearPosY);
+    tft->print("R");
   }
   else
   {
-    tft.setTextColor(dc, 0);
+    tft->setTextColor(dc, 0);
     if (Gear<NUMOFGEARS)
     {
-      tft.setCursor(ScreenLayout.GearPosX, ScreenLayout.GearPosY);
-      tft.print(Gear, DEC);
+      tft->setCursor(ScreenLayout.GearPosX, ScreenLayout.GearPosY);
+      tft->print(Gear, DEC);
     }
   }
 }
@@ -835,32 +833,32 @@ void DrawGear(char ID, signed char Gear)
 // draw water temperature gauge, value is right aligned
 void DrawWaterTemp(char ID, int WaterTemp, int WaterTempPrev)
 {
-  tft.setTextSize(2);
-  if (WaterTemp >= CarProfile[ID].WaterTemp) tft.setTextColor(wc, 0);
-  else tft.setTextColor(dc, 0);
+  tft->setTextSize(2);
+  if (WaterTemp >= CarProfile[ID].WaterTemp) tft->setTextColor(wc, 0);
+  else tft->setTextColor(dc, 0);
                   
   if (WaterTemp < 10 && WaterTemp > 0)
   {
-    tft.setCursor(ScreenLayout.WaterTempPosX+124, ScreenLayout.WaterTempPosY);
-    tft.print(WaterTemp, DEC);
+    tft->setCursor(ScreenLayout.WaterTempPosX+124, ScreenLayout.WaterTempPosY);
+    tft->print(WaterTemp, DEC);
     if (WaterTempPrev >= 10)  // previous value was greater than 9, so we have to clear the above 10 value from the screen
     {
-      tft.fillRect(ScreenLayout.WaterTempPosX+100, ScreenLayout.WaterTempPosY, 24, 16, 0);
+      tft->fillRect(ScreenLayout.WaterTempPosX+100, ScreenLayout.WaterTempPosY, 24, 16, 0);
     }
   }
   else if (WaterTemp < 100 && WaterTemp > 0)
        {
-         tft.setCursor(ScreenLayout.WaterTempPosX+112, ScreenLayout.WaterTempPosY);
-         tft.print(WaterTemp, DEC);
+         tft->setCursor(ScreenLayout.WaterTempPosX+112, ScreenLayout.WaterTempPosY);
+         tft->print(WaterTemp, DEC);
          if (WaterTempPrev >= 100)  // previous value was greater than 99, so we have to clear the above 100 value from the screen
          {
-           tft.fillRect(ScreenLayout.WaterTempPosX+100, ScreenLayout.WaterTempPosY, 12, 16, 0);
+           tft->fillRect(ScreenLayout.WaterTempPosX+100, ScreenLayout.WaterTempPosY, 12, 16, 0);
          }                    
        }
        else if (WaterTemp<1000 && WaterTemp>0) 
             {
-              tft.setCursor(ScreenLayout.WaterTempPosX+100, ScreenLayout.WaterTempPosY);
-              tft.print(WaterTemp, DEC);
+              tft->setCursor(ScreenLayout.WaterTempPosX+100, ScreenLayout.WaterTempPosY);
+              tft->print(WaterTemp, DEC);
             }
 }
 
@@ -870,16 +868,16 @@ void DrawRPM(char ID, int RPM, int RPMPrev, char Limiter, char LimiterPrev)
   if (Limiter == 0 && LimiterPrev != 0) //  RPM limiter was just switched off so we have to clear off the text
   {
     RPMPrev = 0;  //  redraw the complete RPM bar
-    tft.fillRect(99, ScreenLayout.RPMPosY, 132, 20, 0); // clear the "PIT LIMITER" text from screen
+    tft->fillRect(99, ScreenLayout.RPMPosY, 132, 20, 0); // clear the "PIT LIMITER" text from screen
   }
 
   if (Limiter != 0 && LimiterPrev == 0) //  RPM limiter was just switched on so we have to clear the RPM gauge and display the text
   {
-    tft.fillRect(0, ScreenLayout.RPMPosY, RPMPrev, 20, 0);  // clear the rpm bar before displaying the text
-    tft.setTextColor(mc, 0);
-    tft.setTextSize(2);
-    tft.setCursor(99, ScreenLayout.RPMPosY);
-    tft.print("PIT LIMITER");
+    tft->fillRect(0, ScreenLayout.RPMPosY, RPMPrev, 20, 0);  // clear the rpm bar before displaying the text
+    tft->setTextColor(mc, 0);
+    tft->setTextSize(2);
+    tft->setCursor(99, ScreenLayout.RPMPosY);
+    tft->print("PIT LIMITER");
   }
 
   if (Limiter == 0) // we can draw the gauge because the limiter is off
@@ -892,47 +890,47 @@ void DrawRPM(char ID, int RPM, int RPMPrev, char Limiter, char LimiterPrev)
         if (RPMPrev < CarProfile[ID].RPM)
         {
           // we have to draw both color on the RPM gauge
-          tft.fillRect(RPMPrev, ScreenLayout.RPMPosY, CarProfile[ID].RPM-1 -RPMPrev, 20, dc);
-          tft.fillRect(CarProfile[ID].RPM, ScreenLayout.RPMPosY, RPM -CarProfile[ID].RPM, 20, wc);
+          tft->fillRect(RPMPrev, ScreenLayout.RPMPosY, CarProfile[ID].RPM-1 -RPMPrev, 20, dc);
+          tft->fillRect(CarProfile[ID].RPM, ScreenLayout.RPMPosY, RPM -CarProfile[ID].RPM, 20, wc);
         }
         // only the warning color have to be used
-        else tft.fillRect(RPMPrev, ScreenLayout.RPMPosY, RPM -RPMPrev, 20, wc);
+        else tft->fillRect(RPMPrev, ScreenLayout.RPMPosY, RPM -RPMPrev, 20, wc);
       }
       // RPM is not bigger than the warning limit, only the default color have to be used
-      else tft.fillRect(RPMPrev, ScreenLayout.RPMPosY, RPM-RPMPrev, 20, dc);
+      else tft->fillRect(RPMPrev, ScreenLayout.RPMPosY, RPM-RPMPrev, 20, dc);
     }
     // RPM is lower than the previous
-    if (RPMPrev > RPM) tft.fillRect(RPM, ScreenLayout.RPMPosY, RPMPrev-RPM, 20, 0);
+    if (RPMPrev > RPM) tft->fillRect(RPM, ScreenLayout.RPMPosY, RPMPrev-RPM, 20, 0);
   }
 }
 
 // draw speed gauge, value is right aligned
 void DrawSpeed(char ID, int Speed, int SpeedPrev)
 {
-  tft.setTextColor(dc, 0);
-  tft.setTextSize(2);
+  tft->setTextColor(dc, 0);
+  tft->setTextSize(2);
   if (Speed<10)
   {
-    tft.setCursor(ScreenLayout.SpeedPosX+124, ScreenLayout.SpeedPosY);
-    tft.print(Speed, DEC);
+    tft->setCursor(ScreenLayout.SpeedPosX+124, ScreenLayout.SpeedPosY);
+    tft->print(Speed, DEC);
     if (SpeedPrev>=10)  // clear the disappeared digit(s)
     {
-      tft.fillRect(ScreenLayout.SpeedPosX+100, ScreenLayout.SpeedPosY, 24, 16, 0);
+      tft->fillRect(ScreenLayout.SpeedPosX+100, ScreenLayout.SpeedPosY, 24, 16, 0);
     }
   }
   else if (Speed<100)
        {
-        tft.setCursor(ScreenLayout.SpeedPosX+112, ScreenLayout.SpeedPosY);
-        tft.print(Speed, DEC);
+        tft->setCursor(ScreenLayout.SpeedPosX+112, ScreenLayout.SpeedPosY);
+        tft->print(Speed, DEC);
          if (SpeedPrev>=100)  // clear the disappeared digit(s)
          {
-           tft.fillRect(ScreenLayout.SpeedPosX+100, ScreenLayout.SpeedPosY, 12, 16, 0);
+           tft->fillRect(ScreenLayout.SpeedPosX+100, ScreenLayout.SpeedPosY, 12, 16, 0);
          }
        }
   else if (Speed<1000)
        {
-        tft.setCursor(ScreenLayout.SpeedPosX+100, ScreenLayout.SpeedPosY);
-        tft.print(Speed, DEC);
+        tft->setCursor(ScreenLayout.SpeedPosX+100, ScreenLayout.SpeedPosY);
+        tft->print(Speed, DEC);
        }
 }
 
@@ -946,21 +944,21 @@ void DrawSLI(char ID, int SLI, int SLIPrev)
     {
       switch (i)
       {
-        case 0: tft.fillRect(10, ScreenLayout.SLIPosY, 25, 16, 0);
+        case 0: tft->fillRect(10, ScreenLayout.SLIPosY, 25, 16, 0);
                 break;
-        case 1: tft.fillRect(50, ScreenLayout.SLIPosY, 25, 16, 0);
+        case 1: tft->fillRect(50, ScreenLayout.SLIPosY, 25, 16, 0);
                 break;
-        case 2: tft.fillRect(90, ScreenLayout.SLIPosY, 25, 16, 0);
+        case 2: tft->fillRect(90, ScreenLayout.SLIPosY, 25, 16, 0);
                 break;
-        case 3: tft.fillRect(130, ScreenLayout.SLIPosY, 25, 16, 0);
+        case 3: tft->fillRect(130, ScreenLayout.SLIPosY, 25, 16, 0);
                 break;
-        case 4: tft.fillRect(170, ScreenLayout.SLIPosY, 25, 16, 0);
+        case 4: tft->fillRect(170, ScreenLayout.SLIPosY, 25, 16, 0);
                 break;
-        case 5: tft.fillRect(210, ScreenLayout.SLIPosY, 25, 16, 0);
+        case 5: tft->fillRect(210, ScreenLayout.SLIPosY, 25, 16, 0);
                 break;
-        case 6: tft.fillRect(250, ScreenLayout.SLIPosY, 25, 16, 0);
+        case 6: tft->fillRect(250, ScreenLayout.SLIPosY, 25, 16, 0);
                 break;
-        case 7: tft.fillRect(290, ScreenLayout.SLIPosY, 25, 16, 0);
+        case 7: tft->fillRect(290, ScreenLayout.SLIPosY, 25, 16, 0);
                 break;                
       }
     }
@@ -972,21 +970,21 @@ void DrawSLI(char ID, int SLI, int SLIPrev)
     {
       switch (i)
       {
-        case 1: tft.fillRect(10, ScreenLayout.SLIPosY, 25, 16, dc);
+        case 1: tft->fillRect(10, ScreenLayout.SLIPosY, 25, 16, dc);
                 break;
-        case 2: tft.fillRect(50, ScreenLayout.SLIPosY, 25, 16, dc);
+        case 2: tft->fillRect(50, ScreenLayout.SLIPosY, 25, 16, dc);
                 break;
-        case 3: tft.fillRect(90, ScreenLayout.SLIPosY, 25, 16, dc);
+        case 3: tft->fillRect(90, ScreenLayout.SLIPosY, 25, 16, dc);
                 break;
-        case 4: tft.fillRect(130, ScreenLayout.SLIPosY, 25, 16, dc);
+        case 4: tft->fillRect(130, ScreenLayout.SLIPosY, 25, 16, dc);
                 break;
-        case 5: tft.fillRect(170, ScreenLayout.SLIPosY, 25, 16, mc);
+        case 5: tft->fillRect(170, ScreenLayout.SLIPosY, 25, 16, mc);
                 break;
-        case 6: tft.fillRect(210, ScreenLayout.SLIPosY, 25, 16, mc);
+        case 6: tft->fillRect(210, ScreenLayout.SLIPosY, 25, 16, mc);
                 break;
-        case 7: tft.fillRect(250, ScreenLayout.SLIPosY, 25, 16, wc);
+        case 7: tft->fillRect(250, ScreenLayout.SLIPosY, 25, 16, wc);
                 break;
-        case 8: tft.fillRect(290, ScreenLayout.SLIPosY, 25, 16, wc);
+        case 8: tft->fillRect(290, ScreenLayout.SLIPosY, 25, 16, wc);
                 break;
      }
    }
@@ -995,20 +993,20 @@ void DrawSLI(char ID, int SLI, int SLIPrev)
 
 void DrawCarSelectionMenu()
 {
-  tft.fillScreen(0);  
-  tft.setTextSize(2);
-  tft.setCursor(52, 0);
-  tft.setTextColor(dc, 0);
-  tft.print("Car Selection Menu");
-  tft.setTextSize(1);
+  tft->fillScreen(0);  
+  tft->setTextSize(2);
+  tft->setCursor(52, 0);
+  tft->setTextColor(dc, 0);
+  tft->print("Car Selection Menu");
+  tft->setTextSize(1);
 
   for (int i=0; i<NUMOFCARS; i++)
   {
-    tft.setTextColor(bc, 0);
-    tft.drawRoundRect(Button[i].x, Button[i].y, Button[i].Width, Button[i].Height, 5, bc);
-    tft.setCursor(Button[i].TextX, Button[i].TextY);
-    tft.setTextColor(dc, 0);
-    tft.print(CarProfile[i].CarName);
+    tft->setTextColor(bc, 0);
+    tft->drawRoundRect(Button[i].x, Button[i].y, Button[i].Width, Button[i].Height, 5, bc);
+    tft->setCursor(Button[i].TextX, Button[i].TextY);
+    tft->setTextColor(dc, 0);
+    tft->print(CarProfile[i].CarName);
   }
 }
 
@@ -1042,8 +1040,8 @@ void setup()
   randomSeed(analogRead(0));
   
   // setup the LCD and switch on the backlight
-  tft.begin();
-  tft.setRotation(1); // set to landscape mode
+  tft->begin(80000000);  // set SPI bus to 80 MHz
+  tft->setRotation(1); // set to landscape mode
   pinMode(TFT_LED, OUTPUT);
   digitalWrite(TFT_LED, HIGH);  // switch on the backlight
 
