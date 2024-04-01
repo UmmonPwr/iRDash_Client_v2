@@ -21,9 +21,9 @@
 #define TOUCH_Y_MAX 3895
 
 // define car identification numbers
-#define NUMOFCARS  8    // number of car profiles, maximum is 16
+#define NUMOFCARS  9    // number of car profiles, maximum is 16
 #define NUMOFGEARS 10   // maximum number of gears including reverse and neutral
-#define DEFAULTCAR 5    // car profile to show at startup
+#define DEFAULTCAR 8    // car profile to show at startup
 #define ID_Skippy  0    // Skip Barber
 #define ID_CTS_V   1    // Cadillac CTS-V
 #define ID_MX5_NC  2    // Mazda MX5 NC
@@ -32,6 +32,7 @@
 #define ID_DF3     5    // Dallara Formula 3
 #define ID_992_CUP 6    // Porsche 911 GT3 cup (992)
 #define ID_GR86    7    // Toyota GR86
+#define ID_SFL     8    // Super Formula Lights
 
 // define the drawing colors, rgb components in 8 bit range in comment
 // color value in 16 bit; 5 bit red, 6 bit green, 5 bit blue format
@@ -493,6 +494,29 @@ void UploadProfiles()
     CarProfile[ID_GR86].SLI[i][7] = 7250; // all blue
   }
 
+  // Super Formula Lights
+  CarProfile[ID_SFL].CarName[0] = 'S';
+  CarProfile[ID_SFL].CarName[1] = 'F';
+  CarProfile[ID_SFL].CarName[2] = 'L';
+  CarProfile[ID_SFL].CarName[3] = 0;
+
+  CarProfile[ID_SFL].Fuel = 10;
+  CarProfile[ID_SFL].RPM = 305;           // 7050 / RPMscale
+  CarProfile[ID_SFL].RPMscale = 23.125;   // 7400 / 320
+  CarProfile[ID_SFL].WaterTemp = 110;
+
+  for (int i = 0; i<NUMOFGEARS; i++)
+  {
+    CarProfile[ID_SFL].SLI[i][0] = 6200;
+    CarProfile[ID_SFL].SLI[i][1] = 6300;
+    CarProfile[ID_SFL].SLI[i][2] = 6400;
+    CarProfile[ID_SFL].SLI[i][3] = 6500;
+    CarProfile[ID_SFL].SLI[i][4] = 6600;
+    CarProfile[ID_SFL].SLI[i][5] = 6700;
+    CarProfile[ID_SFL].SLI[i][6] = 6800;
+    CarProfile[ID_SFL].SLI[i][7] = 6900;
+  }
+
   // buttons for car selection menu
   // use the formula to determine button outline: (x*80)+10, (y*54)+30, 60, 36)
   // x and y is the position in the 4x4 matrix
@@ -710,6 +734,25 @@ void DrawBackground(char ID)
         tft->setCursor(294, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
         tft->println("70");
         tft->drawLine(CarProfile[ID_GR86].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        break;
+
+      case ID_SFL:
+        tft->drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_DF3].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft->drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft->drawLine(86, ScreenLayout.RPMPosY+28, 86, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft->drawLine(173, ScreenLayout.RPMPosY+28, 173, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft->drawLine(259, ScreenLayout.RPMPosY+28, 259, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft->setTextColor(bc, 0);
+        tft->setTextSize(1);
+        tft->setCursor(38, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft->println("10");
+        tft->setCursor(125, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft->println("30");
+        tft->setCursor(211, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft->println("50");
+        tft->setCursor(298, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft->println("70");
+        tft->drawLine(CarProfile[ID_DF3].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
     }
   }
