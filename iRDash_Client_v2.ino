@@ -21,18 +21,19 @@
 #define TOUCH_Y_MAX 3895
 
 // define car identification numbers
-#define NUMOFCARS  9    // number of car profiles, maximum is 16
-#define NUMOFGEARS 10   // maximum number of gears including reverse and neutral
-#define DEFAULTCAR 8    // car profile to show at startup
-#define ID_Skippy  0    // Skip Barber
-#define ID_CTS_V   1    // Cadillac CTS-V
-#define ID_MX5_NC  2    // Mazda MX5 NC
-#define ID_MX5_ND  3    // Mazda MX5 ND
-#define ID_FR20    4    // Formula Renault 2.0
-#define ID_DF3     5    // Dallara Formula 3
-#define ID_992_CUP 6    // Porsche 911 GT3 cup (992)
-#define ID_GR86    7    // Toyota GR86
-#define ID_SFL     8    // Super Formula Lights
+#define NUMOFCARS   10   // number of car profiles, maximum is 16
+#define NUMOFGEARS  10   // maximum number of gears including reverse and neutral
+#define DEFAULTCAR  9    // car profile to show at startup
+#define ID_Skippy   0    // Skip Barber
+#define ID_CTS_V    1    // Cadillac CTS-V
+#define ID_MX5_NC   2    // Mazda MX5 NC
+#define ID_MX5_ND   3    // Mazda MX5 ND
+#define ID_FR20     4    // Formula Renault 2.0
+#define ID_DF3      5    // Dallara Formula 3
+#define ID_992_CUP  6    // Porsche 911 GT3 cup (992)
+#define ID_GR86     7    // Toyota GR86
+#define ID_SFL      8    // Super Formula Lights
+#define ID_G82_M4   9    // BMW G82 M4
 
 // define the drawing colors, rgb components in 8 bit range in comment
 // color value in 16 bit; 5 bit red, 6 bit green, 5 bit blue format
@@ -162,10 +163,10 @@ struct SScreenLayout
 struct SCarProfile
 {
   char CarName[10];
-  int Fuel;                   // value which below warning color drawed (value in liter * 10)
+  int Fuel;                   // value which below warning color is used (value in deciliter)
   int RPM;                    // value where the redline starts in pixels
   float RPMscale;             // actual RPM value is divided by this number to scale it to display coordinate
-  int WaterTemp;              // value in Celsius
+  int WaterTemp;              // value in celsius which above warning color is used
   int SLI[NUMOFGEARS][8];     // RPM values for each SLI light
 };
 
@@ -230,7 +231,9 @@ void UploadProfiles()
   ScreenLayout.WaterTempPosY = 182;
   ScreenLayout.ShowWaterTemp = true;
 
+  /**************************/
   // Skip Barber
+  /**************************/
   CarProfile[ID_Skippy].CarName[0] = 'S';
   CarProfile[ID_Skippy].CarName[1] = 'k';
   CarProfile[ID_Skippy].CarName[2] = 'i';
@@ -255,8 +258,10 @@ void UploadProfiles()
     CarProfile[ID_Skippy].SLI[i][6] = 5900;
     CarProfile[ID_Skippy].SLI[i][7] = 6100;
   }
-                               
+
+  /**************************/                            
   // Cadillac CTS-V
+  /**************************/
   CarProfile[ID_CTS_V].CarName[0] = 'C';
   CarProfile[ID_CTS_V].CarName[1] = 'T';
   CarProfile[ID_CTS_V].CarName[2] = 'S';
@@ -281,7 +286,9 @@ void UploadProfiles()
     CarProfile[ID_CTS_V].SLI[i][7] = 7300;
   }
   
+  /**************************/
   // Mazda MX-5 NC
+  /**************************/
   CarProfile[ID_MX5_NC].CarName[0] = 'M';
   CarProfile[ID_MX5_NC].CarName[1] = 'X';
   CarProfile[ID_MX5_NC].CarName[2] = '5';
@@ -307,7 +314,10 @@ void UploadProfiles()
     CarProfile[ID_MX5_NC].SLI[i][7] = 6850;
 
   }
+
+  /**************************/
   // Mazda MX-5 ND
+  /**************************/
   CarProfile[ID_MX5_ND].CarName[0] = 'M';
   CarProfile[ID_MX5_ND].CarName[1] = 'X';
   CarProfile[ID_MX5_ND].CarName[2] = '5';
@@ -333,7 +343,9 @@ void UploadProfiles()
     CarProfile[ID_MX5_ND].SLI[i][7] = 7200;
   }
 
+  /**************************/
   // Formula Renault 2.0
+  /**************************/
   CarProfile[ID_FR20].CarName[0] = 'F';
   CarProfile[ID_FR20].CarName[1] = 'R';
   CarProfile[ID_FR20].CarName[2] = ' ';
@@ -359,7 +371,9 @@ void UploadProfiles()
     CarProfile[ID_FR20].SLI[i][7] = 7300;
   }
 
+  /**************************/
   // Dallara Formula 3
+  /**************************/
   CarProfile[ID_DF3].CarName[0] = 'D';
   CarProfile[ID_DF3].CarName[1] = 'a';
   CarProfile[ID_DF3].CarName[2] = 'l';
@@ -385,7 +399,9 @@ void UploadProfiles()
     CarProfile[ID_DF3].SLI[i][7] = 7150;
   }
 
+  /**************************/
   // Porsche 992 GT3 cup
+  /**************************/
   CarProfile[ID_992_CUP].CarName[0] = '9';
   CarProfile[ID_992_CUP].CarName[1] = '9';
   CarProfile[ID_992_CUP].CarName[2] = '2';
@@ -444,17 +460,14 @@ void UploadProfiles()
   CarProfile[ID_992_CUP].SLI[5][7] = 7925;
 
   // 5th gear
-  for (int i = 6; i<NUMOFGEARS; i++)
-  {
-    CarProfile[ID_992_CUP].SLI[i][0] = 7275;
-    CarProfile[ID_992_CUP].SLI[i][1] = 7375;
-    CarProfile[ID_992_CUP].SLI[i][2] = 7475;
-    CarProfile[ID_992_CUP].SLI[i][3] = 7575;
-    CarProfile[ID_992_CUP].SLI[i][4] = 7675;
-    CarProfile[ID_992_CUP].SLI[i][5] = 7775;
-    CarProfile[ID_992_CUP].SLI[i][6] = 7875;
-    CarProfile[ID_992_CUP].SLI[i][7] = 7975;
-  }
+  CarProfile[ID_992_CUP].SLI[6][0] = 7275;
+  CarProfile[ID_992_CUP].SLI[6][1] = 7375;
+  CarProfile[ID_992_CUP].SLI[6][2] = 7475;
+  CarProfile[ID_992_CUP].SLI[6][3] = 7575;
+  CarProfile[ID_992_CUP].SLI[6][4] = 7675;
+  CarProfile[ID_992_CUP].SLI[6][5] = 7775;
+  CarProfile[ID_992_CUP].SLI[6][6] = 7875;
+  CarProfile[ID_992_CUP].SLI[6][7] = 7975;
 
   // 6th gear and above
   // no display, move indicators above of real rpm range
@@ -470,7 +483,9 @@ void UploadProfiles()
     CarProfile[ID_992_CUP].SLI[i][7] = 9900;
   }
 
+  /**************************/
   // Toyota GR86
+  /**************************/
   CarProfile[ID_GR86].CarName[0] = 'G';
   CarProfile[ID_GR86].CarName[1] = 'R';
   CarProfile[ID_GR86].CarName[2] = '8';
@@ -478,8 +493,8 @@ void UploadProfiles()
   CarProfile[ID_GR86].CarName[4] = 0;
  
   CarProfile[ID_GR86].Fuel = 10;
-  CarProfile[ID_GR86].RPM = 296;          // 6950 / RPMscale
-  CarProfile[ID_GR86].RPMscale = 23.44;   // 7500 / 320
+  CarProfile[ID_GR86].RPM = 296;            // 6950 / RPMscale
+  CarProfile[ID_GR86].RPMscale = 23.4375;   // 7500 / 320
   CarProfile[ID_GR86].WaterTemp = 95;
 
   for (int i = 0; i<NUMOFGEARS; i++)
@@ -494,7 +509,9 @@ void UploadProfiles()
     CarProfile[ID_GR86].SLI[i][7] = 7250; // all blue
   }
 
+  /**************************/
   // Super Formula Lights
+  /**************************/
   CarProfile[ID_SFL].CarName[0] = 'S';
   CarProfile[ID_SFL].CarName[1] = 'F';
   CarProfile[ID_SFL].CarName[2] = 'L';
@@ -517,9 +534,93 @@ void UploadProfiles()
     CarProfile[ID_SFL].SLI[i][7] = 6900;
   }
 
+  /**************************/
+  // BMW G82 M4
+  /**************************/
+  CarProfile[ID_G82_M4].CarName[0] = 'G';
+  CarProfile[ID_G82_M4].CarName[1] = '8';
+  CarProfile[ID_G82_M4].CarName[2] = '2';
+  CarProfile[ID_G82_M4].CarName[3] = ' ';
+  CarProfile[ID_G82_M4].CarName[4] = 'M';
+  CarProfile[ID_G82_M4].CarName[5] = '4';
+  CarProfile[ID_G82_M4].CarName[6] = 0;
+
+  CarProfile[ID_G82_M4].Fuel = 30;
+  CarProfile[ID_G82_M4].RPM = 311;           // 7300 / RPMscale
+  CarProfile[ID_G82_M4].RPMscale = 23.4375;  // 7500 / 320
+  CarProfile[ID_G82_M4].WaterTemp = 85;
+
+  for (int i = 0; i<2; i++)
+  // reverse, neutral
+  {
+    CarProfile[ID_G82_M4].SLI[i][0] = 5600; // 1st green
+    CarProfile[ID_G82_M4].SLI[i][1] = 5600; // 1st green
+    CarProfile[ID_G82_M4].SLI[i][2] = 5800; // 2nd green
+    CarProfile[ID_G82_M4].SLI[i][3] = 5800; // 2nd green
+    CarProfile[ID_G82_M4].SLI[i][4] = 6000; // 3rd yellow
+    CarProfile[ID_G82_M4].SLI[i][5] = 6200; // 4th yellow
+    CarProfile[ID_G82_M4].SLI[i][6] = 6400; // 5th red
+    CarProfile[ID_G82_M4].SLI[i][7] = 6600; // all red and blinking
+  }
+
+  // 1st gear
+  CarProfile[ID_G82_M4].SLI[2][0] = 5450;
+  CarProfile[ID_G82_M4].SLI[2][1] = 5450;
+  CarProfile[ID_G82_M4].SLI[2][2] = 5850;
+  CarProfile[ID_G82_M4].SLI[2][3] = 5850;
+  CarProfile[ID_G82_M4].SLI[2][4] = 6250;
+  CarProfile[ID_G82_M4].SLI[2][5] = 6650;
+  CarProfile[ID_G82_M4].SLI[2][6] = 7050;
+  CarProfile[ID_G82_M4].SLI[2][7] = 7450;
+
+  // 2nd gear
+  CarProfile[ID_G82_M4].SLI[3][0] = 5800;
+  CarProfile[ID_G82_M4].SLI[3][1] = 5800;
+  CarProfile[ID_G82_M4].SLI[3][2] = 6125;
+  CarProfile[ID_G82_M4].SLI[3][3] = 6125;
+  CarProfile[ID_G82_M4].SLI[3][4] = 6450;
+  CarProfile[ID_G82_M4].SLI[3][5] = 6775;
+  CarProfile[ID_G82_M4].SLI[3][6] = 7100;
+  CarProfile[ID_G82_M4].SLI[3][7] = 7450;
+
+  // 3rd gear
+  CarProfile[ID_G82_M4].SLI[4][0] = 6450;
+  CarProfile[ID_G82_M4].SLI[4][1] = 6450;
+  CarProfile[ID_G82_M4].SLI[4][2] = 6650;
+  CarProfile[ID_G82_M4].SLI[4][3] = 6650;
+  CarProfile[ID_G82_M4].SLI[4][4] = 6850;
+  CarProfile[ID_G82_M4].SLI[4][5] = 7050;
+  CarProfile[ID_G82_M4].SLI[4][6] = 7250;
+  CarProfile[ID_G82_M4].SLI[4][7] = 7450;
+
+  // 4th gear
+  CarProfile[ID_G82_M4].SLI[5][0] = 6900;
+  CarProfile[ID_G82_M4].SLI[5][1] = 6900;
+  CarProfile[ID_G82_M4].SLI[5][2] = 7010;
+  CarProfile[ID_G82_M4].SLI[5][3] = 7010;
+  CarProfile[ID_G82_M4].SLI[5][4] = 7120;
+  CarProfile[ID_G82_M4].SLI[5][5] = 7230;
+  CarProfile[ID_G82_M4].SLI[5][6] = 7340;
+  CarProfile[ID_G82_M4].SLI[5][7] = 7450;
+
+  // 5th gear and above
+  for (int i = 6; i<NUMOFGEARS; i++)
+  {
+    CarProfile[ID_G82_M4].SLI[i][0] = 7250;
+    CarProfile[ID_G82_M4].SLI[i][1] = 7250;
+    CarProfile[ID_G82_M4].SLI[i][2] = 7290;
+    CarProfile[ID_G82_M4].SLI[i][3] = 7290;
+    CarProfile[ID_G82_M4].SLI[i][4] = 7330;
+    CarProfile[ID_G82_M4].SLI[i][5] = 7370;
+    CarProfile[ID_G82_M4].SLI[i][6] = 7410;
+    CarProfile[ID_G82_M4].SLI[i][7] = 7450;
+  }
+  
+  /******************************************************************************/
   // buttons for car selection menu
   // use the formula to determine button outline: (x*80)+10, (y*54)+30, 60, 36)
   // x and y is the position in the 4x4 matrix
+  /******************************************************************************/
   for (int i=0; i<NUMOFCARS; i++)
   {
     Button[i].x = ((i%4)*80)+10;
@@ -753,6 +854,25 @@ void DrawBackground(char ID)
         tft->setCursor(298, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
         tft->println("70");
         tft->drawLine(CarProfile[ID_DF3].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
+        break;
+
+        case ID_G82_M4:
+        tft->drawLine(0, ScreenLayout.RPMPosY+35, CarProfile[ID_G82_M4].RPM-1, ScreenLayout.RPMPosY+35, bc); // horizontal green line
+        tft->drawLine(0, ScreenLayout.RPMPosY+24, 0, ScreenLayout.RPMPosY+34, bc);     // 0 rmp mark
+        tft->drawLine(85, ScreenLayout.RPMPosY+28, 85, ScreenLayout.RPMPosY+34, bc);   // 2000 rpm mark
+        tft->drawLine(171, ScreenLayout.RPMPosY+28, 171, ScreenLayout.RPMPosY+34, bc); // 4000 rpm mark
+        tft->drawLine(256, ScreenLayout.RPMPosY+28, 256, ScreenLayout.RPMPosY+34, bc); // 6000 rpm mark
+        tft->setTextColor(bc, 0);
+        tft->setTextSize(1);
+        tft->setCursor(38, ScreenLayout.RPMPosY+24);   // 1000 rpm mark -5 pixel
+        tft->println("10");
+        tft->setCursor(123, ScreenLayout.RPMPosY+24);  // 3000 rpm mark -5 pixel
+        tft->println("30");
+        tft->setCursor(208, ScreenLayout.RPMPosY+24);  // 5000 rpm mark -5 pixel
+        tft->println("50");
+        tft->setCursor(294, ScreenLayout.RPMPosY+24);  // 7000 rpm mark -5 pixel
+        tft->println("70");
+        tft->drawLine(CarProfile[ID_G82_M4].RPM, ScreenLayout.RPMPosY+35, 319, ScreenLayout.RPMPosY+35, wc); // horizontal red line
         break;
     }
   }
