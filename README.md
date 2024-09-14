@@ -18,7 +18,7 @@ Currently it has profile for:
 - MX-5 (NC and ND)
 - Formula Renault 2.0
 - Dallara Formula 3
-- Porsche 911 GT3 cup (992) // updated for 2022 season 4
+- Porsche 911 GT3 cup (992) // updated for 2024 season 4
 - Toyota GR86
 - Super Formula Lights
 - BMW G82 M4
