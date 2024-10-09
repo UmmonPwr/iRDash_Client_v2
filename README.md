@@ -32,3 +32,12 @@ To display the live data of iRacing it needs the "iRDash Server" program running
 To compile the program you need the below libraries:
 - Arduino GFX library https://github.com/moononournation/Arduino_GFX
 - Touch sense library https://github.com/PaulStoffregen/XPT2046_Touchscreen
+
+Screenshot:
+<img src="images/screenshot.jpg" width=700 />
+
+Schematic of adapter board between display and ESP32 module:
+<img src="images/schematic.jpg">
+
+Image of adapter board between display and ESP32 module:
+<img src="images/adapter.jpg">
