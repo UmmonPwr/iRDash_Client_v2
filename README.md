@@ -37,7 +37,7 @@ Screenshot:
 <img src="images/screenshot.jpg" width=700 />
 
 Schematic of adapter board between display and ESP32 module:
-<img src="images/schematic.jpg">
+<img src="images/schematic.png">
 
 Image of adapter board between display and ESP32 module:
-<img src="images/adapter.jpg">
+<img src="images/adapter.png">
