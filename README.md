@@ -33,11 +33,11 @@ To compile the program you need the below libraries:
 - Arduino GFX library https://github.com/moononournation/Arduino_GFX
 - Touch sense library https://github.com/PaulStoffregen/XPT2046_Touchscreen
 
-#Screenshot:
+## Screenshot:
 <img src="images/screenshot.jpg" width=700>
 
-#Schematic of adapter board between display and ESP32 module:
+## Schematic of adapter board between display and ESP32 module:
 <img src="images/schematic.png">
 
-#Image of adapter board between display and ESP32 module:
+## Image of adapter board between display and ESP32 module:
 <img src="images/adapter.png">
